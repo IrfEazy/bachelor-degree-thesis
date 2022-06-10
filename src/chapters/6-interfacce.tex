@@ -1,0 +1,22 @@
+\documentclass[../thesis.tex]{subfiles}
+\begin{document}
+    \newpage
+
+
+    \section{Interfacce}\label{sec:interfacce}
+    I tipi di interfaccia esprimono generalizzazioni o astrazioni sui comportamenti di altri tipi.
+    Generalizzando, le interfacce ci permettono di scrivere funzioni più flessibili e adattabili perché non sono legate ai dettagli di una particolare implementazione.
+    \hfill \vspace{12pt}
+
+    Ciò che rende le interfacce di Go così distintive è che sono \textit{soddisfatte implicitamente}.
+    In altre parole, non c'è bisogno di dichiarare tutte le interfacce che un dato tipo concreto soddisfa;
+    basta semplicemente possedere i metodi necessari.
+    Questo design consente di creare nuove interfacce che sono soddisfatte dai tipi concreti esistenti senza modificare i tipi esistenti, il che è particolarmente utile per i tipi definiti in pacchetti che non si controllano.
+    \subfile{6-interfacce-subsection/1-interfacce-come-contratti}
+    \subfile{6-interfacce-subsection/2-tipi-di-interfaccia}
+    \subfile{6-interfacce-subsection/3-soddisfazione-interfaccia}
+    \subfile{6-interfacce-subsection/4-parsing-flags-con-flag.value}
+    \subfile{6-interfacce-subsection/5-valori-di-interfaccia}
+    \subfile{6-interfacce-subsection/6-interfaccia-error}
+    \clearpage
+\end{document}

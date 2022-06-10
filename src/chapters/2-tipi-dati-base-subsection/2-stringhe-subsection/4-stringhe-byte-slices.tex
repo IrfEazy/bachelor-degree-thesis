@@ -1,0 +1,31 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+    \subsubsection{Stringhe e byte slices}
+    I pacchetti standard particolarmente importanti per manipolare le stringhe sono quattro: \verb"bytes", \verb"strings", \verb"strconv" e \verb"unicode".
+    Il pacchetto \verb"strings" fornisce molte funzioni per la ricerca, la sostituzione, il confronto, il taglio, la divisione e l'unione delle stringhe.
+    \hfill \vspace{12pt}
+
+    Il pacchetto \verb"bytes" ha funzioni simili per manipolare porzioni di byte, di tipo \verb"[]byte", che condividono alcune proprietà con le stringhe.
+    Poiché le stringhe sono immutabili, la creazione di stringhe in modo incrementale può comportare un sacco di allocazione e copie.
+    In questi casi, è più efficiente usare il tipo \verb"bytes.Buffer".
+    \hfill \vspace{12pt}
+
+    Una stringa contiene un array di byte che, una volta creata, è immutabile.
+    Al contrario, gli elementi di una slice di byte possono essere liberamente modificati.
+    Le stringhe possono essere convertite in byte slice e viceversa:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting2-2-4.1}]
+s := "abc"
+b := []byte(s)
+s2 := string(b)
+    \end{lstlisting}
+    Concettualmente, la conversione \verb"[]byte(s)" alloca un nuovo array di byte che contiene una copia dei byte di \verb"s", e produce una slice che fa riferimento alla totalità di quell'array.
+    In generale la copia è necessaria per garantire che i byte di \verb"s" rimangano invariati nel caso quelli di \verb"b" vengano successivamente modificati.
+    La conversione da byte slice a string con \verb"string(b)" fa anch'esso una copia, per assicurare l'immutabilità della stringa risultante \verb"s2".
+    \hfill \vspace{12pt}
+
+    Per evitare conversioni e allocazioni di memoria non necessarie, molte delle funzioni di utilità nel pacchetto \verb"bytes" parallelizzano direttamente le loro controparti nel pacchetto \verb"strings".
+    \hfill \vspace{12pt}
+
+    Il pacchetto \verb"bytes" fornisce il tipo \verb"Buffer" per una manipolazione efficiente delle slice byte.
+    Un \verb"Buffer" inizia vuoto, ma cresce accumulando dati di tipi quali \verb"string", \verb"byte" e \verb"[]byte".
+\end{document}

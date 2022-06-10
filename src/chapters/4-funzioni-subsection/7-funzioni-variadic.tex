@@ -1,0 +1,55 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Funzioni variadic}\label{subsec:funzioni-variadic}
+    Una \textit{funzione variadic} può essere chiamata con un numero variabile di argomenti.
+    Gli esempi più familiari sono \verb"fmt.Printf" e le sue varianti. \verb"Printf" richiede un argomento fisso all'inizio, quindi accetta qualsiasi numero di argomenti successivi.
+    \hfill \vspace{12pt}
+
+    Per dichiarare una funzione variadic, il tipo del parametro finale è preceduto da un ellissi, ``\verb"..."", che indica che la funzione può essere chiamata con qualsiasi numero di argomenti di questo tipo.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-7.1}]
+func sum(vals ...int) int {
+   total := 0
+   for _, val := range vals {
+      total += val
+   }
+   return total
+}
+    \end{lstlisting}
+    La funzione \verb"sum" restituisce la somma di zero o più argomenti \verb"int".
+    All'interno del corpo della funzione, il tipo di \verb"vals" è una slice \verb"[]int".
+    Quando si invoca \verb"sum", qualunque numero di valori può essere fornito come parametro \verb"vals".
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-7.2}]
+fmt.Println(sum())
+fmt.Println(sum(3))
+fmt.Println(sum(1, 2, 3, 4))
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-7.3}]
+0
+3
+10
+    \end{lstlisting}
+    Implicitamente, il chiamante alloca un array, copia gli argomenti in esso, e passa una slice dell'intero array alla funzione.
+    L'ultima chiamata dell'ultimo esempio si comporta come la chiamata del seguente esempio, in cui si mostra come invocare una funzione variadic quando gli argomenti sono già in una slice: si deve posizionare un ellissi dopo l'argomento finale.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-7.4}]
+values := []int{1, 2, 3, 4}
+fmt.Println(sum(values...))
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-7.5}]
+10
+    \end{lstlisting}
+    Sebbene il parametro \verb"...int" si comporti come una slice all'interno del corpo della funzione, il tipo di una funzione variadic è distinto dal tipo di una funzione con un parametro slice ordinario.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-7.6}]
+func f(...int) {}
+func g([]int) {}
+
+fmt.Printf("%T\n", f)
+fmt.Printf("%T\n", g)
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-7.7}]
+func(...int)
+func([]int)
+    \end{lstlisting}
+\end{document}

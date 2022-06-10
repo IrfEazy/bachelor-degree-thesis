@@ -1,0 +1,44 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Dichiarazioni del tipo}\label{subsec:dichiarazioni-del-tipo}
+    Il tipo di variabile o espressione definisce le caratteristiche dei valori che può assumere, come la loro dimensione (numero di bit o numero di elementi, forse), come sono rappresentati internamente, le operazioni intrinseche che possono essere eseguite su di essi, e i metodi ad essi associati.
+    \hfill \vspace{12pt}
+
+    Una dichiarazione di \verb"type" definisce un nuovo \textit{tipo denominato} che ha lo stesso \textit{tipo sottostante} di un tipo esistente.
+    Il tipo denominato fornisce un modo per separare usi diversi e forse incompatibili del tipo sottostante in modo che non possano essere mescolati involontariamente.
+    \begin{lstlisting}[label={lst:lstlisting1-5.1}]
+type nome tipoSottostante
+    \end{lstlisting}
+    Le dichiarazioni di tipo appaiono più spesso a livello di pacchetto, e se il nome viene esportato è accessibile anche da altri pacchetti.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-5.2}]
+package tempconv
+
+import "fmt"
+
+type Celsius float64
+type Fahrenheit float64
+
+const (
+    AbsoluteZeroC Celsius = -273.15
+    FreezingC	  Celsius = 0
+    BoilingC	  Celsius = 100
+)
+
+func CToF(c Celsius) Fahrenheit { return Fahrenheit(c*9/5 + 32) }
+
+func FToC(f Fahrenheit) Celsius { return Celsius((f - 32) * 5 / 9) }
+    \end{lstlisting}
+    In questo esempio, sono definiti due tipi denominati, \verb"Celsius" e \verb"Fahrenheit".
+    Anche se entrambi hanno lo stesso tipo sottostante, \verb"float64", non hanno lo stesso tipo, quindi non possono essere comparati o combinati con espressioni aritmetiche.
+    Un'esplicita \textit{conversione} di tipo, come \verb"Celsius(t)" e \verb"Fahrenheit(t)", è richiesto per convertire una variabile \verb"t" di tipo \verb"float64".
+    \hfill \vspace{12pt}
+
+    Per ogni tipo \verb"T", c'è una corrispondente operazione di conversione \verb"T(x)" che converte il valore \verb"x" in tipo \verb"T".
+    Una conversione da un tipo all'altro è consentita se entrambi hanno lo stesso tipo sottostante, o se entrambi sono tipi di puntatore senza nome che puntano a variabili dello stesso tipo sottostante;
+    queste conversioni cambiano il tipo ma non la rappresentazione del valore.
+    \hfill \vspace{12pt}
+
+    Il tipo sottostante di un tipo denominato determina la sua struttura e rappresentazione, e anche l'insieme di operazioni intrinseche che supporta, che sono gli stessi come se il tipo sottostante fosse stato utilizzato direttamente.
+    Nel caso si facciano comparazioni fra tipi denominati di diverso tipo, allora si ottiene un errore di compilazione per mancata corrispondenza del tipo.
+    \subfile{5-dichiarazioni-tipo-subsection/1-inizializzazione-pacchetti}
+\end{document}

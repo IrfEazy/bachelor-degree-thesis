@@ -1,0 +1,107 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Interfacce come contratti}\label{subsec:interfacce-come-contratti}
+    Tutti i tipi esaminati finora sono stati \textit{tipi concreti}.
+    Un tipo concreto specifica la rappresentazione esatta dei suoi valori ed espone le operazioni intrinseche di tale rappresentazione, come l'aritmetica per i numeri, o l'indicizzazione, l'\verb"append" e il \verb"range" per le slice.
+    Un tipo concreto può anche fornire comportamenti aggiuntivi attraverso i suoi metodi.
+    Quando si ha un valore di tipo concreto, si sa esattamente di cosa \textit{si tratta} e cosa \textit{si può fare} con esso.
+    \hfill \vspace{12pt}
+
+    C'è un'altra tipologia di tipi in Go chiamata \textit{interfaccia}.
+    L'interfaccia è un \textit{tipo astratto}.
+    Essa non espone all'esterno la sua struttura interna e quella dei suoi valori e non rivela l'insieme base di operazioni che questi valori supportano;
+    solo alcuni metodi sono visibili all'esterno.
+    Quando si ha un valore di un tipo interfaccia, non si sa nulla di ciò che \textit{è}; si sa solo cosa può \textit{fare}, o più precisamente, i comportamenti che i suoi metodi forniscono.
+    \hfill \vspace{12pt}
+
+    Ci sono due funzioni simili per la formattazione delle stringhe: \verb"fmt.Printf", che scrive il risultato sullo standard output (un file), e \verb"fmt.Sprintf", che restituisce il risultato come una \verb"string".
+    Sarebbe un peccato se la parte difficile, formattare il risultato, dovesse essere duplicata a causa di queste differenze superficiali nel modo in cui il risultato viene utilizzato.
+    Grazie alle interfacce, non succede.
+    Entrambe queste funzioni sono, in effetti, wrapper intorno a una terza funzione, \verb"fmt.Fprintf", che è agnostica su ciò che accade al risultato che calcola:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting6-1.1}]
+package fmt
+
+func Fprintf(w io.Writer, format string, args ...interface{}) (int, error)
+
+func Printf(format string, args ...interface{}) (int, error) {
+    return Fprintf(os.Stdout, format, args...)
+}
+
+func Sprintf(format string, args ...interface{}) string {
+    var buf bytes.Buffer
+    Fprintf(&buf, format, args...)
+    return buf.String()
+}
+    \end{lstlisting}
+    Il prefisso \verb"F" di \verb"Fprintf" sta per \textit{file} e indica che l'output formattato dovrebbe essere scritto nel file fornito come primo argomento.
+    Nel caso di \verb"Printf", l'argomento, \verb"os.Stdout", è un \verb"*os.file".
+    Nel caso di \verb"Sprintf", tuttavia, l'argomento non è un file, anche se superficialmente può somigliare: \verb"&buf" è un puntatore a un buffer di memoria in cui i byte possono essere scritti.
+    \hfill \vspace{12pt}
+
+    Il primo parametro di \verb"Fprintf" non è nemmeno un file.
+    È un \verb"io.Writer", che è un tipo di interfaccia con la seguente dichiarazione:
+    \newpage\noindent
+    \begin{lstlisting}[frame = single,label={lst:lstlisting6-1.2}]
+package io
+
+// Writer is the interface that wraps the basic Write method.
+type Writer interface {
+    // Write writes len(p) bytes from p to the underlying data stream.
+    // It returns the number of bytes written from p (0 <= n <= len(p))
+    // and any error encountered that caused the write to stop early.
+    // Write must return a non-nil error if it returns n < len(p).
+    // Write must not modify the slice data, even temporarily.
+    //
+    // Implementations must not retain p.
+    Write(p []byte) (n int, err error)
+}
+    \end{lstlisting}
+    L'interfaccia \verb"io.Writer" definisce il contratto tra \verb"Fprintf" e i suoi chiamanti.
+    Da un lato, il contratto richiede che il chiamante fornisca un valore di un tipo concreto come \verb"*os.File" o \verb"*bytes.Buffer" che ha un metodo chiamato \verb"Write" con la firma e il comportamento appropriati.
+    D'altra parte, il contratto garantisce che \verb"Fprintf" farà il suo lavoro dato qualsiasi valore che soddisfi l'interfaccia \verb"io.Writer". \verb"Fprintf" non può presumere che stia scrivendo su un file o una memoria, solo che possa chiamare \verb"Write".
+    \hfill \vspace{12pt}
+
+    Si può tranquillamente passare un valore di qualsiasi tipo concreto che soddisfi \verb"io.Writer" come primo argomento a \verb"fmt.Fprintf".
+    Questa libertà di sostituire un tipo con un altro che soddisfi la stessa interfaccia è chiamata \textit{sostituibilità} ed è un segno distintivo della programmazione orientata agli oggetti.
+    \hfill \vspace{12pt}
+
+    Viene presentato ora un esempio di tipo concreto che soddisfa l'interfaccia \verb"io.Writer".
+    Il metodo di scrittura del tipo \verb"*ByteCounter" conta soltanto i byte scritti prima di scartarli.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting6-1.3}]
+type ByteCounter int
+
+func (c *ByteCounter) Write(p []byte) (int, error) {
+    *c += ByteCounter(len(p)) // converte int in ByteCounter
+    return len(p), nil
+}
+    \end{lstlisting}
+    Poiché \verb"*ByteCounter" soddisfa il contratto di \verb"io.Writer", lo si può passare in input a \verb"Fprintf", che fa la sua formattazione stringa ignaro di questo cambiamento;
+    il \verb"ByteCounter" accumula correttamente la lunghezza del risultato.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting6-1.4}]
+var c ByteCounter
+c.Write([]byte("hello"))
+fmt.Println(c)
+
+c = 0 // reset del contatore
+var name = "Dolly"
+fmt.Fprintf(&c, "hello, %s", name)
+fmt.Println(c)
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting6-1.5}]
+5
+12
+    \end{lstlisting}
+    Oltre a \verb"io.Writer", c'è un'altra interfaccia di grande importanza per il package \verb"fmt". \verb"Fprintf" e \verb"Fprintln" forniscono un modo per i tipi di controllare come vengono stampati i loro valori.
+    Dichiarare un metodo \verb"String" rende un tipo capace di soddisfare una delle interfacce più utilizzate di tutti, \verb"fmt.Stringer":
+    \begin{lstlisting}[frame = single,label={lst:lstlisting6-1.6}]
+package fmt
+
+// The String method is used to print values passed
+// as an operand to any format that accepts a string
+// or to an unformatted printer such as Print.
+type Stringer interface {
+    String() string
+}
+    \end{lstlisting}
+\end{document}

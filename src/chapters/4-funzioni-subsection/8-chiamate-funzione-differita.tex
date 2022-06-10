@@ -1,0 +1,74 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Chiamate con funzione differita}\label{subsec:chiamate-con-funzione-differita}
+    Sintatticamente, un'istruzione \verb"defer" è una funzione ordinaria o una chiamata di metodo preceduta dalla parola chiave \verb"defer".
+    Le espressioni di funzione e argomento vengono valutate quando l'istruzione viene eseguita, ma la chiamata effettiva viene \textit{differita} fino a quando la funzione che contiene l'istruzione \verb"defer" non è terminata, sia che si tratti normalmente di eseguire un'istruzione return, o anormalmente, dal panic.
+    Qualsiasi numero di chiamate può essere differito;
+    vengono eseguite al contrario dell'ordine in cui sono state differite.
+    \hfill \vspace{12pt}
+
+    Una dichiarazione di \verb"defer" viene spesso utilizzata con operazioni associate come aprire e chiudere, connettersi e disconnettersi o bloccare e sbloccare per garantire che le risorse vengano rilasciate in tutti i casi, indipendentemente dalla complessità del flusso di controllo.
+    Il posto giusto per un'istruzione \verb"defer" che rilascia una risorsa è immediatamente dopo che la risorsa è stata acquisita con successo.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.1}]
+package ioutil
+
+func ReadFile(filename string) ([]byte, error) {
+    f, err := os.Open(filename)
+    if err != nil {
+        return nil, err
+    }
+    defer f.Close()
+    return ReadAll(f)
+}
+    \end{lstlisting}
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.2}]
+var mu sync.Mutex
+var m = make(map[string]int)
+
+func lookup(key string) int {
+    mu.Lock()
+    defer mu.Unlock()
+    return m[key]
+}
+    \end{lstlisting}
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.3}]
+func bigSlowOperation() {
+    defer trace("bigSlowOperation")() // non si dimentichino le parentesi
+    				      // extra per avviare la funzione
+    time.Sleep(10 * time.Second)      // si simula un'operazione lenta
+}
+
+func trace(msg string) func() {
+    start := time.Now()
+    log.Printf("enter %s", msg)
+    return func() { log.Printf("exit %s (%s)", msg, time.Since(start)) }
+}
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-8.4}]
+2022/03/05 18:46:39 enter bigSlowOperation
+2022/03/05 18:46:49 exit bigSlowOperation (10.000589217s)
+    \end{lstlisting}
+    Le funzioni differite vengono eseguite \textit{dopo} che le istruzioni di ritorno hanno aggiornato le variabili dei risultati della funzione.
+    Poiché una funzione anonima può accedere alle variabili della sua funzione di racchiudimento, inclusi i risultati denominati, una funzione anonima differita può osservare i risultati della funzione.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.5}]
+func double(x int) (result int) {
+    defer func() { fmt.Printf("double(%d) = %d\n", x, result) }()
+    return x + x
+}
+
+func triple(x int) (result int) {
+    defer func() { result += x }()
+    return double(x)
+}
+
+func main() {
+    fmt.Println(triple(4))
+}
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-8.6}]
+double(4) = 8
+12
+    \end{lstlisting}
+\end{document}

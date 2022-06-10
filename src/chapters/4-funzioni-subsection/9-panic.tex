@@ -1,0 +1,11 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Panic}\label{subsec:panic}
+    Il sistema di tipo di Go cattura gli errori al momento della compilazione, ma altri, come l'accesso all'array out-of-bounds o il puntatore nil, la dereferenza, richiedono controlli al momento dell'esecuzione.
+    Quando la routine Go rileva questi errori, lancia il \verb"panic".
+    \hfill \vspace{12pt}
+
+    Durante un tipico panic, l'esecuzione normale si ferma, tutte le chiamate di funzione differite vengono eseguite e il programma si blocca con un messaggio di log.
+    Questo messaggio di log include il valore di panic, che di solito è un messaggio di errore di qualche tipo, e, per ogni goroutine, una traccia di stack che mostra la pila di chiamate di funzione che erano attive al momento del panico.
+    Questo messaggio di log ha spesso abbastanza informazioni per diagnosticare la causa principale del problema senza eseguire di nuovo il programma, quindi dovrebbe sempre essere incluso in una segnalazione di bug su un programma in preda al panic.
+\end{document}

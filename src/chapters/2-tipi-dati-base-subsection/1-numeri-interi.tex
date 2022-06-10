@@ -1,0 +1,39 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Numeri interi}\label{subsec:numeri-interi}
+    Go fornisce sia l'aritmetica intera con segno che senza segno.
+    Ci sono quattro dimensioni distinte di interi con segno - \verb|8|, \verb"16", \verb"32" e \verb"64" - rappresentati dai tipi \verb"int8", \verb"int16", \verb"int32" e \verb"int64", e corrispondenti versioni senza segno \verb"uint8", \verb"uint16", \verb"uint32" e \verb"uint64".
+    \hfill \vspace{12pt}
+
+    Ci sono anche due tipi, chiamati solo \verb"int" e \verb"uint", che sono la dimensione naturale o più efficiente per interi con segno e senza segno su una particolare piattaforma.
+    Entrambi i tipi hanno le stesse dimensioni, ma non si devono fare ipotesi su quali;
+    diversi compilatori possono fare scelte diverse anche su hardware identico.
+    \hfill \vspace{12pt}
+
+    Il tipo \verb"rune" è un sinonimo di \verb"int32" e convenzionalmente indica che un valore è un punto di codice Unicode.
+    I due nomi possono essere usati in modo intercambiabile.
+    Allo stesso modo, il tipo \verb"byte" è un sinonimo di \verb"uint8".
+    \hfill \vspace{12pt}
+
+    Infine, c'è un tipo di numero intero senza segno \verb"uintptr" la cui larghezza non è specificata ma è sufficiente per contenere tutti i bit di un valore puntatore.
+    Il tipo \verb"uintptr" viene utilizzato solo per la programmazione di basso livello, ad esempio a bordo di un programma Go con una libreria C o un sistema operativo.
+    \hfill \vspace{12pt}
+
+    Gli operatori binari di Go per l'aritmetica, la logica e il confronto sono elencati qui in ordine decrescente di precedenza:
+    \begin{center}
+        \begin{tabular}{ l l l l l l l l }
+            & \verb"*"  & \verb"/"  & \verb"%" & \verb"<<" & \verb">>" & \&        & \&\verb"^" \\
+            & \verb"+"  & \verb"-"  & \verb"|" & \verb"^"  &           &           &            \\
+            & \verb"==" & \verb"!=" & \verb"<" & \verb"<=" & \verb">"  & \verb">=" &            \\
+            & \&\&      &           &          &           &           &           &            \\
+            & \verb"||" &           &          &           &           &           &            \\
+        \end{tabular}\label{tab:table1}
+    \end{center}
+    Ci sono solo cinque livelli di precedenza per gli operatori binari.
+    Gli operatori dello stesso livello si associano a sinistra, quindi possono essere richieste parentesi per chiarezza.
+    \hfill \vspace{12pt}
+
+    Gli operatori aritmetici \verb"+", \verb"-", \verb"*" e \verb"/" possono essere applicati ai numeri interi, in virgola mobile e complessi, ma l'operatore resto \verb"%" si applica solo agli interi.
+    In Go, il segno del resto è sempre lo stesso del segno del dividendo, quindi \verb"-5%3" e \verb"-5%-3" sono entrambi \verb"-2".
+    Il comportamento di \verb"/" dipende dal fatto che i suoi operandi siano interi, quindi \verb"5.0/4.0" è \verb"1.25", ma \verb"5/4" è \verb"1" perché la divisione intera tronca il risultato verso zero.
+\end{document}

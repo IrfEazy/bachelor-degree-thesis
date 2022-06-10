@@ -1,0 +1,73 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Valori ed espressioni del metodo}\label{subsec:valori-ed-espressioni-del-metodo}
+    Di solito si seleziona e si chiama un metodo nella stessa espressione, come in \verb"p.Distance()", ma è possibile separare queste due operazioni.
+    Il selettore \verb"p.Distance" produce un \textit{valore del metodo}, una funzione che lega un metodo (\verb"Point.Distance") a un valore ricevitore specifico \verb"p".
+    Questa funzione può essere invocata senza un valore di ricevitore;
+    ha bisogno solo degli argomenti non riceventi.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting5-4.1}]
+p := Point{1, 2}
+q := Point{4, 6}
+
+distanceFromP := p.Distance // valore di metodo
+fmt.Println(distanceFromP(q))
+var origin Point // {0, 0}
+fmt.Println(distanceFromP(origin))
+
+scaleP := p.ScaleBy // valore di metodo
+scaleP(2)	    // p diventa (2, 4)
+scaleP(3)	    // ora (6, 12)
+scaleP(10)	    // ora (60, 120)
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting5-4.2}]
+5
+2.23606797749979
+    \end{lstlisting}
+    Correlato al valore del metodo è l'\textit{espressione del metodo}.
+    Quando si chiama un metodo, al contrario di una funzione ordinaria, bisogna fornire il ricevitore in modo speciale utilizzando la sintassi del selettore.
+    Un'espressione di metodo, scritta \verb"T.f" o \verb"(*T).f" dove \verb"T" è un tipo, produce un valore di funzione con un primo parametro regolare che prende il posto del ricevitore, quindi può essere chiamato nel modo usuale.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting5-4.3}]
+p := Point{1, 2}
+q := Point{4, 6}
+
+distance := Point.Distance
+fmt.Println(distance(p, q))
+fmt.Printf("%T\n", distance)
+
+scale := (*Point).ScaleBy
+scale(&p, 2)
+fmt.Println(p)
+fmt.Printf("%T\n", scale)
+    \end{lstlisting}
+    \newpage\noindent Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting5-4.4}]
+5
+func(Point, Point) floa64
+{2 4}
+func(*Point, float64)
+    \end{lstlisting}
+    Le espressioni del metodo possono essere utili quando è necessario un valore per rappresentare una scelta tra diversi metodi appartenenti allo stesso tipo in modo da poter chiamare il metodo scelto con diversi ricevitori.
+    Nell'esempio seguente la variabile \verb"op" rappresenta l'addizione o il metodo di sottrazione del tipo \verb"Point", e \verb"Path.TranslateBy" la chiama per ogni punto del \verb"Path":
+    \begin{lstlisting}[frame = single,label={lst:lstlisting5-4.5}]
+type Point struct { X, Y float64 }
+
+func (p Point) Add(q Point) Point { return Point{p.X + q.X, p.Y + q.Y} }
+func (p Point) Sub(q Point) Point { return Point{p.X - q.X, p.Y - q.Y} }
+
+type Path []Point
+
+func (path Path) TranslateBy(offset Point, add bool) {
+    var op func(p, q Point) Point
+    if add {
+        op = Point.Add
+    } else {
+        op = Point.Sub
+    }
+    for i := range path {
+        // Chiama o path[i].Add(offset) o path[i].Sub(offset)
+        path[i] = op(path[i], offset)
+    }
+}
+    \end{lstlisting}
+\end{document}

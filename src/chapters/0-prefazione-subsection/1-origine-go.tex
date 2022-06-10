@@ -1,0 +1,28 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection*{L'origine di Go}
+    Go è talvolta descritto come un ``linguaggio C-like", o come ``C del 21\degree secolo".
+    Da C, Go ha ereditato sintassi, flussi di controllo, tipi di dati di base, chiamate di valore nel passaggio dei parametri, puntatori e, soprattutto, enfasi C su programmi che compilano con codice macchina efficiente e cooperano naturalmente con le astrazioni del sistema operativo corrente.
+    \hfill \vspace{12pt}
+
+    Tuttavia, ci sono altri antenati nell'albero genealogico Go. Un grande flusso di influenza proviene dalle lingue Wirth, a cominciare da Pascal.
+    Modula-2 ha ispirato il concetto di pacchetto.
+    Oberon ha eliminato la distinzione tra i file di interfaccia del modulo e i file di implementazione del modulo.
+    Oberon-2 ha influenzato la sintassi per gli imballaggi, le importazioni e le dichiarazioni, in particolare le dichiarazioni di metodo.
+    \hfill \vspace{12pt}
+
+    Un altro lignaggio tra gli antenati di Go, e uno che distingue Go tra i recenti linguaggi di programmazione, è una sequenza di piccoli linguaggi di ricerca sviluppati presso i Bell Labs, tutti ispirati dal concetto di \textit{Communicating Sequential Processes} (CSP) o processi di comunicazione sequenziale in italiano.
+    In CSP, i programmi sono una composizione parallela di processi senza condivisione dello stato;
+    i processi comunicano e sincronizzano utilizzando i canali.
+    Tuttavia CSP era solo un linguaggio formale, e non un linguaggio di programmazione.
+    \hfill \vspace{12pt}
+
+    La prima implementazione del CSP in un linguaggio di programmazione si chiamava Squeak, che offriva un linguaggio per la gestione di eventi mouse e tastiera creando canali in modo statico.
+    Questo è stato seguito da Newsqueak, che ha offerto dichiarazioni C-like ed espressioni sintattiche e tipo di notazione Pascal-like.
+    È stato puramente un linguaggio funzionale con garbage collector ancora una volta specializzata in tastiera, mouse, e la gestione delle finestre degli eventi.
+    I canali sono stati creati dinamicamente e memorizzati in variabili.
+    Ha seguito il linguaggio di programmazione Alef in cui è stato rimosso il garbage collector, rendendo la competizione dei linguaggi di programmazione molto più feroce.
+    \hfill \vspace{12pt}
+
+    Go offre la possibilità di definire array dinamici con un accesso casuale efficiente, ma consente anche protocolli di condivisione sofisticati che ricordano le liste concatenate.
+\end{document}

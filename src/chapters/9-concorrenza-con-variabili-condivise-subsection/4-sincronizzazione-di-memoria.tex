@@ -1,0 +1,40 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Sincronizzazione di memoria}\label{subsec:sincronizzazione-di-memoria}
+    Nei computer moderni ci sono una dozzina di processori, ognuno con la propria cache locale.
+    Per efficienza, le scritture alla memoria sono propagate solo all'interno del processore e caricate in memoria centrale solo quando necessarie.
+    Tali scritture possono anche essere caricate in memoria in ordine diverso rispetto a come sono state scritte nella goroutine.
+    Le primitive di sincronizzazione come i channel di comunicazione e le operazioni di mutex fanno sì che il processore carichi tutte le scritture accumulate cosicché gli effetti dell'esecuzione della goroutine siano garantiti essere visibili alle goroutine in esecuzione sugli altri processori.
+    \hfill \vspace{12pt}
+
+    Si consideri l'output del seguente codice:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting9-4.1}]
+var x, y int
+go func() {
+    x = 1                   // A1
+    fmt.Print("y:", y, " ") // A2
+}()
+go func() {
+    y = 1                   // B1
+    fmt.Print("x:", x, " ") // B2
+}()
+    \end{lstlisting}
+    Dato che le due goroutine sono concorrenti e accedono alle variabili condivise senza mutua esclusione, c'è un data race, per cui il programma non può essere deterministico.
+
+    I possibili output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting9-4.2}]
+y:0 x:1
+x:0 y:1
+x:1 y:1
+y:1 x:1
+    \end{lstlisting}
+    La quarta linea può essere spiegata con la sequenza \verb"A1+B1+A2+B2" o \verb"B1+A1+A2+B2", per esempio.
+
+    Comunque, queste due sequenze possono avere output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting9-4.3}]
+x:0 y:0
+y:0 x:0
+    \end{lstlisting}
+    Ma dipende dal compilatore, dalla CPU e da tanti altri fattori.
+    Tutti questi problemi possono essere evitati con un uso consistente di semplici pattern.
+\end{document}

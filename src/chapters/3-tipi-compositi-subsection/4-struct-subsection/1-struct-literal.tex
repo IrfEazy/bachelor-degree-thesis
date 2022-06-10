@@ -1,0 +1,40 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+    \subsubsection{Struct literal}
+    Un valore di un tipo di struttura può essere scritto usando una \textit{struct literal} che specifica i valori per i suoi campi.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-1.1}]
+type Point struct { X, Y int }
+
+p := Point{1, 2}
+    \end{lstlisting}
+    Ci sono due forme di struct literal.
+    La prima forma, mostrata sopra, richiede che sia specificato un valore per \textit{ogni} campo nell'ordine giusto.
+    Rende il codice fragile se l'insieme dei campi dovesse poi crescere o essere riordinato.
+    Di conseguenza, questa forma tende ad essere usata solo all'interno del pacchetto che definisce il tipo di struct, o con tipi di struct più piccoli per i quali esiste un'ovvia convenzione di ordinamento dei campi, come \verb"image.Point{x, y}" o \verb"color.RGBA{red, green, blue, alpha}".
+    \hfill \vspace{12pt}
+
+    Più spesso, viene usata la seconda forma, in cui un valore di struct viene inizializzato elencando alcuni o tutti i nomi dei campi e i loro valori corrispondenti.
+    Se un campo è omesso in questo tipo di literal, viene impostato al valore zero per il suo tipo.
+    \hfill \vspace{12pt}
+
+    I valori di struct possono essere passati come argomenti alle funzioni e restituiti da esse.
+    Per esempio, questa funzione scala un ``Punto" di un fattore specificato:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-1.2}]
+func Scale(p Point, factor int) Point {
+    return Point{p.X * factor, p.Y * factor}
+}
+
+fmt.Println(Scale(Point{1, 2}, 5))
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-4-1.3}]
+{5 10}
+    \end{lstlisting}
+    Per efficienza, la struct più grande è solitamente passata a o restituita da funzioni indirettamente usando un puntatore
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-1.4}]
+func Bonus(e *Employee, percent int) int {
+    return e.Salary * percent / 100
+}
+    \end{lstlisting}
+    e questo è necessario se la funzione deve modificare il suo argomento, poiché in un linguaggio call-by-value come Go, la funzione chiamata riceve solo una copia di un argomento, non un riferimento all'argomento originale.
+\end{document}

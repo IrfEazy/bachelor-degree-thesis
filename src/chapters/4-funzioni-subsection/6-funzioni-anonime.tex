@@ -1,0 +1,51 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Funzioni anonime}\label{subsec:funzioni-anonime}
+    Le funzioni con nome possono essere dichiarate solo a livello di pacchetto, ma possiamo usare una \textit{function literal} per denotare un valore di funzione all'interno di qualsiasi espressione.
+    Una funzione literal è scritta come una dichiarazione di funzione, ma senza un nome che segue la parola chiave \verb"func".
+    È un'espressione, e il suo valore è detto \textit{funzione anonima}.
+    \hfill \vspace{12pt}
+
+    I function literal permettono di definire una funzione nel loro punto d'uso:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-6.1}]
+strings.Map(func(r rune) rune { return r + 1 }, "HAL-9000")
+    \end{lstlisting}
+    Ancora più importante, le funzioni definite in questo modo hanno accesso all'intero ambiente lessicale, quindi la funzione interna può riferirsi alle variabili dalla funzione che la racchiude:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting4-6.2}]
+func squares() func() int {
+    var x int
+    return func() int {
+        x++
+        return x * x
+    }
+}
+
+func main() {
+    f := squares()
+    fmt.Println(f())
+    fmt.Println(f())
+    fmt.Println(f())
+    fmt.Println(f())
+}
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-6.3}]
+1
+4
+9
+16
+    \end{lstlisting}
+    La funzione \verb"squares" restituisce un'altra funzione, di tipo \verb"func() int".
+    La prima chiamata a \verb"squares" crea una variabile locale \verb"x" e restituisce una funzione anonima che, ogni volta che viene chiamata, incrementa \verb"x" e ne restituisce il suo quadrato.
+    Una seconda chiamata a \verb"squares" crea una seconda variabile \verb"x" e restituisce una nuova funzione anonima che incrementa quella variabile.
+    \hfill \vspace{12pt}
+
+    L'esempio \verb"squares" dimostra che i valori di funzione non sono solo codice ma possono avere stato.
+    La funzione interna anonima può accedere e aggiornare le variabili locali della funzione \verb"squares" che la racchiude.
+    Questi riferimenti di variabili nascoste sono il motivo per cui le funzioni si classificano come tipi di riferimento e il perché i valori di funzione non sono comparabili.
+    I valori di funzione come questi sono effettuati facendo uso di una tecnica detta \textit{closure} ed i programmatori di Go usano spesso questo termine per i valori di funzione.
+    \hfill \vspace{12pt}
+
+    Quando una funzione anonima richiede la ricorsione, bisogna prima dichiarare una variabile e quindi assegnare la funzione anonima a quella variabile.
+    Se i due passi sono combinati nella dichiarazione (con un'istruzione \verb":="), la function literal non rientrerebbe nell'ambito della variabile, quindi non avrebbe modo di chiamarsi ricorsivamente.
+\end{document}

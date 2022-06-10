@@ -1,0 +1,122 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Mutua esclusione: sync.Mutex}\label{subsec:mutua-esclusione:-sync.mutex}
+    Possiamo pensare di usare un channel con capacity pari a $1$ per assicurarsi che al più una goroutine alla volta acceda ad una variabile condivisa.
+    Un semaforo che conta fino ad $1$ è detto \textit{semaforo binario}.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.1}]
+var (
+    sema    = make(chan struct{}, 1) // un semaforo binario a fare
+    				     // la guardia a balance
+    balance int
+)
+
+func Deposit(amount int) {
+    sema <- struct{}{} // acquisizione token
+    balance = balance + amount
+    <-sema // rilascio token
+}
+
+func Balance() int {
+    sema <- struct{}{} // acquisizione token
+    b := balance
+    <- sema // rilascio token
+    return b
+}
+    \end{lstlisting}
+    Questo pattern di \textit{mutua esclusione} è talmente utile da essere supportato direttamente dal tipo \verb"Mutex" del package \verb"sync".
+    Il metodo \verb"Lock" acqusisce un token (detto un \textit{lock}) e il suo metodo \verb"Unlock" lo rilascia:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.2}]
+var (
+    mu      sync.Mutex // fa la guardia a balance
+    balance int
+)
+
+func Deposit(amount int) {
+    mu.Lock()
+    balance = balance + amount
+    mu.Unlock()
+}
+
+func Balance() int {
+    mu.Lock()
+    b := balance
+    mu.Unlock()
+    return b
+}
+    \end{lstlisting}
+    Ogni volta che una goroutine accede alle variabili di una banca, esso deve richiamare il metodo \verb"Lock" per acquisire l'esclusivo lock.
+    Se un'altra goroutine ha acquisito il lock, questa operazione si bloccherà quando l'altra goroutine richiamerà \verb"Unlock" e il lock diventerà disponibile nuovamente.
+    Il mutex \textit{fa la guardia} alle variabili condivise.
+    Per convenzione, le variabili difese da un mutex sono dichiarate immediatamente dopo la dichiarazione del mutex stesso.
+    Se si devia da questa prassi, bisogna documentarla.
+    \hfill \vspace{12pt}
+
+    La regione di codice fra \verb"Lock" e \verb"Unlock" in cui una goroutine è libera di leggere e modificare una variabile condivisa è detta \textit{sezione critica}.
+    La chiamata di \verb"Unlock" da parte del possessore del lock avviene prima che un'altra goroutine possa acquisire il lock per sè.
+    L'insieme delle funzioni, dei lock dei mutex e delle variabili è detto \textit{monitor}.
+    \hfill \vspace{12pt}
+
+    In sezioni critiche complesse, specialmente quelle che possono lanciare errori e quindi restituire un risultato in modo prematuro, il metodo \verb"Unlock" potrebbe non essere raggiunto.
+    L'istruzione \verb"defer" di Go permette di chiamare \verb"Unlock" in modo differito, in questo modo il programmatore non ha più il dovere di capire dove andare ad inserire il metodo perché tanto la funzione differita sarà sempre l'ultima operazione eseguita dalla funzione.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.3}]
+func Balance() int {
+    mu.Lock()
+    defer mu.Unlock()
+    return balance
+}
+    \end{lstlisting}
+    Con l'istruzione \verb"defer" si elimina anche la necessità di una variabile locale.
+    \hfill \vspace{12pt}
+
+    Si consideri ora la seguente funzione \verb"Withdraw" che riduce il bilancio di un ammontare specificato e restituisce \verb"true", mentre se l'account non possiede sufficienti fondi per la transazione, \verb"Withdraw" ripristina il bilancio e restituisce \verb"false".
+    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.4}]
+// NOTA: non atomica!
+func Withdraw(amount int) bool {
+    Deposit(-amount)
+    if Balance() < 0 {
+        Deposit(amount)
+        return false // fondi insufficienti
+    }
+    return true
+}
+    \end{lstlisting}
+    Oltre a restituire un risultato incorretto, questa funzione ha un brutto effetto collaterale.
+    Quando si tenta un prelievo di una somma eccessiva per il bilancio, questo va in negativo.
+    Questo potrebbe causare ad un prelievo concorrente di piccola somma di essere rifiutato.
+    Questo problema è dato perché \verb"Withdraw" non è una funzione \textit{atomica}: è la composizione di tre operazioni atomiche che a turno prendono il lock e lo rilasciano, ma niente blocca l'intera sequenza.
+    \hfill \vspace{12pt}
+
+    Idealmente, \verb"Withdraw" dovrebbe acquisire il lock del mutex una volta per tutta l'operazione.
+    Comunque, questo tentativo fallirebbe perché \verb"Balance()" rimarrebbe in attesa del lock per sempre, andando quindi in deadlock.
+    \hfill \vspace{12pt}
+
+    Un modo per superare il problema è dividere le funzioni in due parti: una funzione non esportata \verb"deposit", che richiede come ipotesi il lock sia già applicato ed esegue il lavoro, e una funzione esportata \verb"Deposit" che acquisisce il lock prima di chiamare \verb"deposit".
+    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.5}]
+func Withdraw(amount int) bool {
+    mu.Lock()
+    defer mu.Unlock()
+    deposit(-amount)
+    if balance < 0 {
+        deposit(amount)
+        return false // fondi insufficienti
+    }
+    return true
+}
+
+func Deposit(amount int) {
+    mu.Lock()
+    defer mu.Unlock()
+    deposit(amount)
+}
+
+func Balance() {
+    mu.Lock()
+    defer mu.Unlock()
+    return balance
+}
+
+// Questa funzione richiede che il lock sia gi%*\textit{à}*) applicato
+func deposit(amount int) { balance += amount }
+    \end{lstlisting}
+    Quando si usa un mutex, bisogna essere sicuri che sia questo che la variabile che questo controlla siano non esportati, sia che siano variabili a livello di package che campo di una struttura.
+\end{document}

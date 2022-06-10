@@ -1,0 +1,50 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Goroutine}\label{subsec:goroutine}
+    In Go, ogni attività concorrente in esecuzione è detta \textit{goroutine}.
+    Dato un programma con due funzioni, uno che svolge operazioni di computazione e l'altra che scrive qualche dato in output, si supponga che entrambi non si richiamino a vicenda.
+    Un programma sequenziale potrebbe chiamare una funzione e solo in seguito l'altra, ma in un programma \textit{concorrente} con due o più goroutine, le chiamate ad \textit{entrambe} le funzioni possono essere svolte contemporaneamente.
+    \hfill \vspace{12pt}
+
+    Si può pensare per ora alle goroutine come a thread perché la loro differenza è essenzialmente in termini quantitativi e non qualitativi.
+    \hfill \vspace{12pt}
+
+    Quando un programma viene avviato, la sua unica goroutine è quella che richiama la funzione \verb"main", definita \textit{main goroutine}.
+    Le nuove goroutine sono create dall'istruzione \verb"go".
+    Sintatticamente, un'istruzione \verb"go" è una funzione ordinaria o una chiamata ad un metodo con la parola chiave \verb"go" come prefisso.
+    Un'istruzione \verb"go" permette alla funzione di essere chiamata da una nuova e goroutine.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting7-1.1}]
+f()    // chiama f(); attende il risultato
+go f() // crea una nuova goroutine che chiama f(); non c'%*\textit{è}*) attesa
+    \end{lstlisting}
+    Nel seguente esempio, la main goroutine computa il 45esimo numero di Fibonacci.
+    Dato che utilizza un algoritmo inefficiente, essa rimarrà in esecuzione per un tempo considerevole, durante il quale si vorrebbe dire all'utente che il programma è ancora in esecuzione tramite la stampa di uno ``spinner" testuale.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting7-1.2}]
+func main() {
+    go spinner(100 * time.Millisecond)
+    const n = 45
+    fibN := fib(n) // lento 
+    fmt.Printf("\rFibonacci(%d) = %d\n", n, fibN)
+}
+
+func spinner(delay time.Duration) {
+    for {
+        for _, r := range `-\|/` {
+            fmt.Printf("\r%c", r)
+            time.Sleep(delay)
+        }
+    }
+}
+
+func fib(x int) int {
+    if x < 2 {
+        return x
+    }
+    return fib(x-1) + fib(x-2)
+}
+    \end{lstlisting}
+    Una volta computato il risultato, la funzione \verb"main" lo stampa e quindi effettua il return.
+    Quando questo succede, tutte le goroutine vengono bruscamente terminate e il programma si chiude.
+    Non esistono altri modi per terminare una goroutine se non chiudere il programma o effettuare il return della funzione \verb"main", questo perché una goroutine non può terminarne un'altra;
+    esistono tuttavia possibilità di metterle in comunicazione.
+\end{document}

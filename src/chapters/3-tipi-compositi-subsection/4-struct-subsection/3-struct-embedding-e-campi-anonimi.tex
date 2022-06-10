@@ -1,0 +1,70 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+    \subsubsection{Struct embedding e campi anonimi}
+    Un insolito meccanismo \textit{struct embedding} ci permette di usare un tipo di struct detto \textit{campo anonimo} di un altro tipo di struct, fornendo una comoda scorciatoia sintattica in modo che una semplice espressione puntiforme come \verb"x.f" possa rappresentare una catena di campi come \verb"x.d.e.f".
+    \hfill \vspace{12pt}
+
+    Dati le seguenti struct
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.1}]
+type Circle struct {
+    X, Y, Radius int
+}
+
+type Wheel struct {
+    X, Y, Radius, Spokes int
+}
+    \end{lstlisting}
+    conviene raccogliere i campi uguali a individuare una nuova struct
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.2}]
+type Point struct {
+    X, Y int
+}
+type Circle struct {
+    Center Point
+    Radius int
+}
+
+type Wheel struct {
+    Circle Circle
+    Spokes int
+}
+    \end{lstlisting}
+    L'applicazione diventerebbe più chiara, ma questo cambiamento renderebbe anche l'accesso ai campi di ``Wheel" più prolisso:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.3}]
+var w Wheel
+w.Circle.Center.X = 8
+w.Circle.Center.Y = 8
+w.Circle.Radius = 5
+w.Spokes = 20
+    \end{lstlisting}
+    Go ci permette di dichiarare un campo con un tipo ma senza nome;
+    tali campi sono chiamati \textit{campi anonimi}.
+    Il tipo di campo deve essere un tipo con nome o un puntatore a un tipo con nome.
+    Sotto, \verb"Circle" e \verb"Wheel" hanno un campo anonimo ciascuno.
+    Diciamo che un \verb"Point" è \textit{incorporato} all'interno di \verb"Circle", e un \verb"Circle" è incorporato all'interno di \verb"Wheel".
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.4}]
+type Circle struct {
+    Point
+    Radius int
+}
+
+type Wheel struct {
+    Circle
+    Spokes int
+}
+    \end{lstlisting}
+    Grazie all'incorporazione, possiamo fare riferimento ai nomi alle foglie dell'albero implicito senza dare i nomi intermedi:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.5}]
+var w Wheel
+w.X = 8	     // equivalente a w.Circle.Point.X = 8
+w.Y = 8	     // equivalente a w.Circle.Point.Y = 8
+w.Radius = 5 // equivalente a w.Circle.Radius = 5
+w.Spokes = 20
+    \end{lstlisting}
+    Poiché i campi ``anonimi" hanno nomi impliciti, non è possibile avere due campi anonimi dello stesso tipo perché in tal caso i loro nomi entrerebbero in conflitto.
+    \hfill \vspace{12pt}
+
+    Il tipo struct esterno guadagna non solo i campi del tipo embedded ma anche i suoi metodi.
+    Questo meccanismo è il modo principale in cui i comportamenti degli oggetti complessi sono composti da quelli più semplici.
+    La \textit{composizione} è centrale per la programmazione orientata agli oggetti in Go.
+\end{document}

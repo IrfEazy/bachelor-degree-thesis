@@ -1,0 +1,40 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+    \subsubsection{Short variable declaration}
+    All'interno di una funzione, una forma alternativa chiamata \textit{short variable declaration} può essere usata per dichiarare e inizializzare le variabili locali.
+    Questa istruzione assume la forma di \verb"nome := espressione" e il tipo di \verb"nome" è determinato dal tipo di \verb"espressione".
+    Esempi di brevi istruzioni di variabili sono:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3-1.1}]
+anim := gif.GIF{LoopCount: nframes}
+freq := rand.Float64() * 3.0
+t := 0.0
+    \end{lstlisting}
+    A causa della loro compattezza e flessibilità, le short variable declaration sono usate per dichiarare e inizializzare la maggior parte delle variabili locali.
+    Una dichiarazione \verb"var" tende ad essere riservata alle variabili locali che hanno bisogno di un tipo esplicito diverso da quello dell'espressione di inizializzazione, o per quando alla variabile viene assegnato un valore in seguito e il suo valore iniziale non è importante.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3-1.2}]
+i := 100		  // un int
+var boiling float64 = 100 // un float64
+
+var names []string
+var err error
+var p Point
+    \end{lstlisting}
+    Come per le dichiarazioni \verb"var", più variabili possono essere dichiarate e inizializzate con la stessa short variable declaration
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3-1.3}]
+i, j := 0, 1
+    \end{lstlisting}
+    ma le istruzioni con più espressioni di inizializzazione dovrebbero essere usate solo quando aiutano la leggibilità.
+    \hfill \vspace{12pt}
+
+    Va sottolineato che \verb":=" è una dichiarazione, mentre \verb"=" è un'assegnazione.
+    Un'istruzione multi-variabile non dovrebbe essere confusa con un'\textit{assegnazione tupla}, in cui ad ogni variabile sul lato sinistro viene assegnato un valore sul lato destro:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3-1.4}]
+i, j = j, i
+    \end{lstlisting}
+    in questo caso si scambiano i valori di \verb"i" e \verb"j".
+    \hfill \vspace{12pt}
+
+    Come le normali istruzioni \verb"var", le short variable declaration possono essere usate per le chiamate di funzione.
+    Una short variable declaration si comporta come un'assegnazione solo per le variabili che sono già state dichiarate nello stesso blocco lessicale;
+    le dichiarazioni in blocchi esterni sono ignorate.
+\end{document}

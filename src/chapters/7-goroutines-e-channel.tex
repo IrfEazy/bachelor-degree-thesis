@@ -1,0 +1,21 @@
+\documentclass[../thesis.tex]{subfiles}
+\begin{document}
+    \newpage
+
+
+    \section{Goroutine e channel}\label{sec:goroutine-e-channel}
+    La programmazione concorrente, programma visto come composizione di numerose attività autonome, è l'elemento più importante di questi tempi.
+    I server web gestiscono richieste per migliaia di client contemporaneamente.
+    Le app degli smartphone e dei tablet gestiscono le animazioni sull'interfaccia utente mentre simultaneamente eseguono la computazione e le richieste di rete in background.
+    Anche i tradizionali problemi di batch (lettura dei dati, computazione e scrittura degli output) usano la concorrenza per nascondere la latenza delle operazioni I/O così da sfruttare anche i multiprocessori dei computer moderni, i quali, negli anni, continuano a crescere in numero ma non in velocità.
+    \hfill \vspace{12pt}
+
+    Go offre due stili di programmazione concorrente.
+    In questo capitolo vengono esponte le goroutine e i channel, compatibili con la \textit{CSP} o \textit{communicating sequential processes}, un modello di concorrenza dove i valori sono visti come attività indipendenti (goroutine), ma con le variabili confinate alle singole attività.
+    Nel prossimo capitolo verranno illustrati gli aspetti più tradizionali del modello \textit{shared memory multithreading}.
+    \subfile{7-goroutines-e-channel-subsection/1-goroutine}
+    \subfile{7-goroutines-e-channel-subsection/2-esempio-server-di-clock-concorrente}
+    \subfile{7-goroutines-e-channel-subsection/4-channel}
+    \subfile{7-goroutines-e-channel-subsection/10-esempio-chat-server}
+    \clearpage
+\end{document}

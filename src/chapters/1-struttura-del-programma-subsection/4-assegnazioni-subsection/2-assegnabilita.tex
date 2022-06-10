@@ -1,0 +1,13 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+    \subsubsection{Assegnabilità}
+    Le istruzioni di assegnazione sono una forma esplicita di assegnazione, ma ci sono molti posti in un programma in cui un'assegnazione avviene \textit{implicitamente}: una chiamata di funzione assegna implicitamente i valori di argomento alle variabili di parametro corrispondenti;
+    un'istruzione \verb"return" assegna implicitamente gli operandi di \verb"return" alle corrispondenti variabili di risultato.
+    \hfill \vspace{12pt}
+
+    Un'assegnazione, esplicita o implicita, è sempre legale se il lato sinistro (la variabile) e il lato destro (il valore) hanno lo stesso tipo.
+    Più in generale, l'assegnazione è legale se solo se il valore è \textit{assegnabile} al tipo di variabile.
+    \hfill \vspace{12pt}
+
+    Per sapere se due valori possano essere confrontati con \verb"==" e \verb"!=" bisogna vedere la loro assegnabilità: in ogni confronto, il primo operando deve essere assegnabile al tipo del secondo operando, o viceversa.
+\end{document}

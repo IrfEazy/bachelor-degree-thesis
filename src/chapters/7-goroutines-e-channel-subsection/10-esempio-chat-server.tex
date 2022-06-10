@@ -1,0 +1,127 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Esempio: Chat Server}\label{subsec:esempio:-chat-server}
+    Un chat server permette a molti utenti di inviarsi l'un l'altro messaggi testuali.
+    Ci sono quattro tipologie di goroutine in questo programma.
+    C'è un'istanza a testa per la goroutine \verb"main" e \verb"broadcast", e per ogni connessione client c'è una goroutine \verb"handleConn" e una \verb"clientWriter".
+    \hfill \vspace{12pt}
+
+    Il compito della main goroutine è rimanere in ascolto e di accettare connessioni di rete in input da parte di client.
+    Per ognuno di essi, il main crea una nuova goroutine \verb"handleConn".
+    \begin{lstlisting}[frame = single,label={lst:lstlisting7-10.1}]
+func main() {
+    listener, err := net.Listen("tcp", "localhost:8000")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    go broadcaster()
+    for {
+        conn, err := listener.Accept()
+        if err != nil {
+            log.Print(err)
+            continue
+        }
+        go handleConn(conn)
+    }
+}
+    \end{lstlisting}
+    Il broadcaster ha una variabile locale \verb"clients" che tiene registrato l'insieme di tutti i client correntemente connessi.
+    Per ogni client viene memorizzata solo l'identità del loro channel di messaggi in uscita.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting7-10.2}]
+type client chan<- string // un channel di messaggi in uscita
+
+var (
+    entering = make(chan client)
+    leaving  = make(chan client)
+    messages = make(chan string) // tutti i messaggi client in arrivo
+)
+
+func broadcaster() {
+    clients := make(map[client]bool) // tutti i client connessi
+    for {
+        select {
+        case msg := <-messages:
+            // Trasmette il messaggio in entrata ai
+            // channel dei messaggi in uscita di tutti i client.
+            for cli := range clients {
+                cli <- msg
+            }
+        case cli := <-entering:
+            clients[cli] = true
+        case cli := <-leaving:
+            delete(clients, cli)
+            close(cli)
+        }
+    }
+}
+    \end{lstlisting}
+    Il broadcaster rimane in ascolto sui channel globali \verb"entering" e \verb"leaving" per annunci sull'arrivo o sulla partenza di client.
+    Quando riceve un annuncio di questi eventi, aggiorna l'insieme \verb"clients", e se l'evento è di partenza, chiude il channel di messaggi in uscita del client corrispondente.
+    Il broadcaster rimane anche in ascolto di eventi sul channel globale \verb"messages", dove ogni client invia tutti i suoi messaggi in arrivo.
+    Quando il broadcaster riceve uno di questi eventi, invia a tutti i client connessi il messaggio.
+    \hfill \vspace{12pt}
+
+    Ora si veda la goroutine dedicata al client sul server.
+    La funzione \verb"handleConn" crea un channel di messaggi in uscita per il proprio client e annuncia l'arrivo dello stesso client al broadcaster sul channel \verb"entering".
+    A questo punto legge ogni linea di testo dal client, invia ogni linea al broadcaster sul channel di messaggi in arrivo, aggiungendo come prefisso ad ogni messaggio l'identità del mittente.
+    Una volta che non c'è più nulla da leggere dal client, \verb"handleConn" annuncia la partenza del client sul channel \verb"leaving" e chiude la connessione.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting7-10.3}]
+func handleConn(conn net.Conn) {
+    ch := make(chan string) // messaggi client in uscita
+    go clientWriter(conn, ch)
+
+    who := conn.RemoteAddr().String()
+    ch <- "You are " + who
+    messages <- who + " has arrived"
+    entering <- ch
+
+    input := bufio.NewScanner(conn)
+    for input.Scan() {
+        messages <- who + ": " + input.Text()
+    }
+    // NOTA: si ignorano potenziali errori di input.Err()
+
+    leaving <- ch
+    messages <- who + " has left"
+    conn.Close()
+}
+
+func clientWriter(conn net.Conn, ch <-chan string) {
+    for msg := range ch {
+        fmt.Fprintln(conn, msg) // NOTA: si ignorano gli errori di rete
+    }
+}
+    \end{lstlisting}
+    In aggiunta, \verb"handleConn" crea una goroutine \verb"clientWriter" per ogni client che riceve un messaggio in broadcast sul channel di messaggi in uscita del client e li scrive sulla connessione di rete del client.
+    Il ciclo del writer del client termina quando il broadcaster chiude il channel dopo aver ricevuto la notifica di \verb"leaving".
+    \hfill \vspace{12pt}
+
+    Per il lato client invece viene utilizzato il programma esposto nel paragrafo \textbf{Unbuffered channel} di questo capitolo.
+    \hfill \vspace{12pt}
+
+    Una simulazione da linea di comando:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting7-10.4}]
+$ go build chat
+$ go build netcat3
+$ ./chat &
+$ ./netcat3
+You are 127.0.0.1:64208			$ ./netcat3
+127.0.0.1:64211 has arrived		You are 127.0.0.1:64211
+Hi!
+127.0.0.1:64208: Hi!			127.0.0.1:64208: Hi!
+					Hi yourself.
+127.0.0.1:64211 Hi yourself.		127.0.0.1:64211: Hi yourself.
+^C
+					127.0.0.1:64208 has left
+$ ./netcat3
+You are 127.0.0.1:64216			127.0.0.1:64216 has arrived
+					Welcome.
+127.0.0.1:64211: Welcome.		127.0.0.1:64211: Welcome.
+					^C
+127.0.0.1:64211 has left
+    \end{lstlisting}
+    Mentre il server ospita una sessione di chat per $n$ client, il programma esegue $2n+2$ goroutine comunicanti in modo concorrente, anche se necessita di un'esplicita operazione di lock.
+    La \verb"clients" map è confinata in una singola goroutine, nel broadcaster, così non può essere acceduta in modo concorrente.
+    Le uniche variabili condivise fra più goroutine sono i channel e le istanze di \verb"net.Conn", i quali sono entrambi \textit{concurrency safe}.
+\end{document}

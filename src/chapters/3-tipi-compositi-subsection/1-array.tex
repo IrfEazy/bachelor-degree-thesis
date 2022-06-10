@@ -1,0 +1,120 @@
+\documentclass[../../thesis.tex]{subfiles}
+\begin{document}
+    \subsection{Gli array}\label{subsec:gli-array}
+    Un array è una sequenza a lunghezza fissa di zero o più elementi di un particolare tipo.
+    A causa della loro lunghezza fissa, gli array sono raramente utilizzati in modo diretto in Go. Le slice, che possono crescere e ridursi, sono molto più versatili, ma per capire le slice bisogna prima capire le matrici.
+    \hfill \vspace{12pt}
+
+    I singoli elementi dell'array sono accessibili con la notazione indice convenzionale, dove gli indici vanno da zero a uno in meno rispetto alla lunghezza dell'array.
+    La funzione integrata \verb|len| restituisce il numero di elementi nell'array.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-1.1}]
+var a [3]int		 // array di 3 interi
+fmt.Println(a[0])	 // stampa il primo elemento
+fmt.Println(a[len(a)-1]) // stampa l'ultimo elemento
+
+// Stampa gli indici e gli elementi.
+for i, v := range a {
+    fmt.Printf("%d %d\n", i, v)
+}
+
+// Stampa solo gli elementi.
+for _, v := range a {
+    fmt.Printf("%d\n", v)
+}
+    \end{lstlisting}
+    Per impostazione predefinita, gli elementi di una nuova variabile di matrice sono inizialmente impostati al valore zero per il particolare tipo di elemento, che è \verb|0| per i numeri.
+    Possiamo usare un \textit{array letterale} per inizializzare un array con una lista di valori:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-1.2}]
+var q [3]int = [3]int{1, 2, 3}
+var r [3]int = [3]int{1, 2}
+fmt.Println(r[2])
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-1.3}]
+0
+    \end{lstlisting}
+    In un array letterale, se un ellissi ``\verb|...|" appare al posto della lunghezza, la lunghezza dell'array è determinata dal numero di inizializzatori.
+    La definizione di \verb|q| può essere semplificata a:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-1.4}]
+q := [...]int{1, 2, 3}
+fmt.Println("%T\n", q)
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-1.5}]
+[3]int
+    \end{lstlisting}
+    La dimensione di un array fa parte del suo tipo, quindi \verb|[3]int| e \verb|[4]int| sono tipi diversi.
+    La dimensione deve essere un'espressione costante, cioè un'espressione il cui valore può essere calcolato mentre il programma viene compilato.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-1.6}]
+q := [3]int{1, 2, 3}
+q = [4]int{1, 2, 3, 4} // compile error: impossibile assegnare [4]int a
+                       // [3]int
+    \end{lstlisting}
+    La sintassi letterale è simile per array, slice, map e struct.
+    La forma specificata sopra è una lista ordinata di valori, ma è anche possibile specificare una lista di coppie di indici e valori, come:
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-1.7}]
+type Currency int
+
+const (
+    USD Currency = iota
+    EUR
+    GBP
+)
+
+symbol := [...]string{USD: "%*{\dollar}*)", EUR: "%*{€}*)", GBP: "%*{£}*)"}
+
+fmt.Println(GBP, symbol[GBP])
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-1.8}]
+2 %*{£}*)
+    \end{lstlisting}
+    Se il tipo di elemento di un array è comparabile, anche il tipo di array è comparabile, quindi possiamo confrontare direttamente due array di quel tipo usando l'operatore \verb"==", che riporta se tutti gli elementi corrispondenti sono uguali.
+    L'operatore \verb"!=" è la sua negazione.
+    \hfill \vspace{12pt}
+
+    Come esempio, la funzione \verb"Sum256" nel pacchetto \verb"crypto/sha256" produce l'hash crittografico SHA256 o il \textit{digest} di un messaggio memorizzato in una slice di byte arbitraria.
+    Il digest ha 256 bit, quindi il suo tipo è \verb"[32]byte".
+    Se due digest sono uguali, è estremamente probabile che i due messaggi siano uguali;
+    se i digest differiscono, i due messaggi sono diversi.
+    Questo programma stampa e confronta i digest SHA256 di ``\verb"x"" e ``\verb"X"":
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-1.9}]
+import "crypto/sha256"
+
+func main() {
+    c1 := sha256.Sum256([]byte("x"))
+    c2 := sha256.Sum256([]byte("X"))
+    fmt.Printf("%x\n%x\n%t\n%T\n", c1, c2, c1 == c2, c1)
+}
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-1.10}]
+2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881
+4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015
+false
+[32]uint8
+    \end{lstlisting}
+    I due ingressi differiscono di un solo bit, ma molti bit dei loro digest sono diversi fra loro.
+    \hfill \vspace{12pt}
+
+    Quando viene chiamata una funzione, una copia di ogni valore di argomento viene assegnata alla variabile parametro corrispondente, quindi la funzione riceve una copia, non l'originale.
+    Il passaggio di array di grandi dimensioni in questo modo può essere inefficiente, e qualsiasi modifica apportata dalla funzione agli elementi di array influisce solo sulla copia, non sull'originale.
+    A questo proposito, Go tratta gli array come qualsiasi altro tipo, ma questo comportamento è diverso dai linguaggi che implicitamente passano gli array \textit{per riferimento}.
+    \hfill \vspace{12pt}
+
+    Naturalmente, possiamo passare esplicitamente un puntatore ad un array in modo che tutte le modifiche che la funzione apporta agli elementi array siano visibili al chiamante.
+    Questa funzione azzera il contenuto di un array \verb"[32]byte":
+    \begin{lstlisting}[frame = single,label={lst:lstlisting3-1.11}]
+func zero(ptr *[32]byte) {
+    *ptr = [32]byte{}
+}
+    \end{lstlisting}
+    L'array letterale \verb"[32]byte{}" produce un array di 32 byte.
+    Ogni elemento dell'array ha il valore zero per del byte, ovvero la traduzione di \verb"0" in byte.
+    \hfill \vspace{12pt}
+
+    L'utilizzo di un puntatore a un array è efficiente e consente alla funzione chiamata di mutare la variabile del chiamante, ma gli array sono ancora intrinsecamente inflessibili a causa delle loro dimensioni fisse.
+    La funzione \verb"zero" non accetta un puntatore a una variabile di \verb"[16]byte", per esempio, né c'è alcun modo di aggiungere o rimuovere elementi di matrice.
+    Per queste ragioni, oltre a casi speciali come l'hash di dimensione fissa di SHA256, gli array sono raramente usati come parametri di funzione o come risultati;
+    invece, usiamo le slice.
+\end{document}

@@ -1,0 +1,62 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+    \subsubsection{Puntatori}
+    Una variabile è una parte di un archivio contenente un valore.
+    Le variabili create dalle dichiarazioni sono identificate da un nome, come \verb"x", ma la maggior parte delle variabili sono identificate solo da espressioni come \verb"x[i]" o \verb"x.f".
+    Tutte queste espressioni leggono il valore di una variabile, tranne quando appaiono sul lato sinistro di un'assegnazione, nel qual caso viene assegnato un nuovo valore alla variabile.
+    \hfill \vspace{12pt}
+
+    Un valore di un \textit{puntatore} è un \textit{indirizzo} di una variabile.
+    Un puntatore è quindi la posizione in cui un valore è memorizzato.
+    Non tutti i valori hanno un indirizzo, ma ogni variabile ne ha uno.
+    Con un puntatore, è possibile leggere o aggiornare \textit{indirettamente} il valore di una variabile, senza l'uso o la conoscenza del nome di una variabile, sempre ammesso abbia un nome.
+    \hfill \vspace{12pt}
+
+    Se una variabile è dichiarata \verb"var x int", l'espressione \verb"&x" (``\verb"x" address") restituisce un puntatore ad una variabile intera, che è un valore di tipo \verb"*int", si legge ``pointer to int".
+    Se questo valore è definito come \verb"p", si dirà che ``\verb"p" punta a \verb"x"", o equivalentemente ``\verb"p" contiene l'indirizzo di \verb"x"". La variabile a cui \verb"p" punta è indicata da \verb"*p".
+    L'espressione \verb"*p" restituisce il valore di quella variabile, un \verb"int", ma poiché \verb"*p" denota una variabile, allora può anche apparire a sinistra di un'assegnazione, nel qual caso aggiorna la variabile.
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3-2.1}]
+x := 1
+p := &x // p, di tipo *int, punta a x
+fmt.Println(*p)
+*p = 2 // equivalente a x = 2
+fmt.Println(x)
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting1-3-2.2}]
+1
+2
+    \end{lstlisting}
+    Il valore zero di un puntatore per ogni tipo è \verb"nil".
+    Se \verb"p" punta a una variabile, allora vale sempre \verb"p != nil".
+    I puntatori sono comparabili;
+    due puntatori sono uguali se e solo se puntano alla stessa variabile o se entrambi sono \verb"nil".
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3-2.3}]
+var x, y int
+fmt.Println(&x == &x, &x == &y, &x == nil)
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting1-3-2.4}]
+true false false
+    \end{lstlisting}
+    Con i puntatori, possiamo ottenere le modifiche alle variabili locali da altre funzioni.
+    Per esempio,
+    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3-2.5}]
+func incr(p *int) int {
+    *p++ // incrementa il puntato da p, non cambia p
+    return *p
+}
+
+func main() {
+    v := 1
+    incr(&v) // side effect: v vale ora 2
+    fmt.Println(incr(&v))
+    fmt.Println(v)
+}
+    \end{lstlisting}
+    Output:
+    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting1-3-2.6}]
+3
+3
+    \end{lstlisting}
+\end{document}

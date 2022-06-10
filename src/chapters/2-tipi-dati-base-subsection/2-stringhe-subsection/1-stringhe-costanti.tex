@@ -1,0 +1,17 @@
+\documentclass[../../../thesis.tex]{subfiles}
+\begin{document}
+    \subsubsection{Stringhe costanti}
+    Poiché i file sorgente Go sono sempre codificati in UTF-8 e le stringhe di testo Go sono convenzionalmente interpretate come UTF-8, possiamo includere punti di codice Unicode fra i caratteri di stringa.
+    \hfill \vspace{12pt}
+
+    Un valore di stringa può essere scritto come una \textit{stringa letterale}, una sequenza di byte racchiusa tra virgolette doppie.\hfill \vspace{12pt}
+    \hfill \vspace{12pt}
+
+    All'interno delle virgolette di una stringa letterale, le \textit{sequenze di escape} che iniziano con una barra rovesciata \verb"\" possono essere utilizzate per inserire valori di byte arbitrari nella stringa.
+    \hfill \vspace{12pt}
+
+    I byte arbitrari possono anche essere inclusi in stringhe letterali usando escape esadecimali o ottali.
+    Un \textit{escape esadecimale} è scritta \verb"\x|"textit{hh}, con esattamente due cifre esadecimali \textit{h} (in maiuscolo o minuscolo).
+    Un \textit{escape ottale} è scritta \verb"\"\textit{ooo} con esattamente tre cifre ottali \textit{o} (da \verb"0" a \verb"7") non superiori a \verb"\377".
+    Entrambi denotano un singolo byte con il valore specificato.
+\end{document}
