@@ -2,10 +2,10 @@
 \begin{document}
     \subsubsection{Struct embedding e campi anonimi}
     Un insolito meccanismo \textit{struct embedding} ci permette di usare un tipo di struct detto \textit{campo anonimo} di un altro tipo di struct, fornendo una comoda scorciatoia sintattica in modo che una semplice espressione puntiforme come \verb"x.f" possa rappresentare una catena di campi come \verb"x.d.e.f".
-    \hfill \vspace{12pt}
-
-    Dati le seguenti struct
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.1}]
+    \clearpage
+    \newpage
+    Dati le seguenti struct:
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-3.1}]
 type Circle struct {
     X, Y, Radius int
 }
@@ -15,7 +15,7 @@ type Wheel struct {
 }
     \end{lstlisting}
     conviene raccogliere i campi uguali a individuare una nuova struct
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-3.2}]
 type Point struct {
     X, Y int
 }
@@ -30,7 +30,7 @@ type Wheel struct {
 }
     \end{lstlisting}
     L'applicazione diventerebbe più chiara, ma questo cambiamento renderebbe anche l'accesso ai campi di ``Wheel" più prolisso:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-3.3}]
 var w Wheel
 w.Circle.Center.X = 8
 w.Circle.Center.Y = 8
@@ -42,7 +42,7 @@ w.Spokes = 20
     Il tipo di campo deve essere un tipo con nome o un puntatore a un tipo con nome.
     Sotto, \verb"Circle" e \verb"Wheel" hanno un campo anonimo ciascuno.
     Diciamo che un \verb"Point" è \textit{incorporato} all'interno di \verb"Circle", e un \verb"Circle" è incorporato all'interno di \verb"Wheel".
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-3.4}]
 type Circle struct {
     Point
     Radius int
@@ -54,7 +54,7 @@ type Wheel struct {
 }
     \end{lstlisting}
     Grazie all'incorporazione, possiamo fare riferimento ai nomi alle foglie dell'albero implicito senza dare i nomi intermedi:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-3.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-3.5}]
 var w Wheel
 w.X = 8	     // equivalente a w.Circle.Point.X = 8
 w.Y = 8	     // equivalente a w.Circle.Point.Y = 8

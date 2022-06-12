@@ -9,7 +9,7 @@
     La seguente funzione \verb"httpGetBody" sarà presa come colei che si vuole memoizzare.
     Essa produce una richiesta HTTP GET e legge il corpo della risposta.
     Chiamate a questa funzione sono relativamente onerose, per cui si vuole evitare di ripeterle se non necessario.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.1}]
 func httpGetBody(url string) (interface{}, error) {
     resp, err := http.Get(url)
     if err != nil {
@@ -23,7 +23,7 @@ func httpGetBody(url string) (interface{}, error) {
     \hfill \vspace{12pt}
 
     Una prima bozza di cache:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.2}]
 package memo
 
 // Memo tiene nella cache i risultati della chiamata a Func.
@@ -34,7 +34,10 @@ type Memo struct {
 
 // Func %*\textit{è}*) il tipo della funzione da memoizzare.
 type Func func(key string) (interface{}, error)
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.3}]
 type result struct {
     value interface{}
     err   error
@@ -60,7 +63,7 @@ func (memo *Memo) Get(key string) (interface{}, error) {
 
     Un esempio su come usare \verb"Memo".
     Per ogni elemento di uno stream di un URL si chiama \verb"Get", tracciando la latenza della chiamata e l'ammontare di dati restituiti dalla funzione:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.4}]
 m := Memo.New(httpGetBody)
 for url := range incomingURLs() {
     start := time.Now()
@@ -75,8 +78,10 @@ for url := range incomingURLs() {
     \end{lstlisting}
     Dato che le richieste HTTP sono un'opportunità per il parallelismo, si può cambiare il test così da rendere tutte le richieste concorrenti.
     Per sapere quando l'ultima goroutine si conclude, bisogna incrementare un contatore prima di avviare ogni goroutine e decrementarla ogni volta che finisce una di loro.
+    \clearpage
+    \newpage
     Questo servizio è offerto dal tipo contatore \verb"sync.WaitGroup".
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.5}]
 m := Memo.New(httpGetBody)
 var n sync.WaitGroup
 for url := range incomingURLs() {
@@ -101,7 +106,7 @@ n.Wait()
 
     Il modo più semplice per rendere la cache concurrency-safe è usare una sincronizzazione con i monitor.
     Tutto ciò che serve è aggiungere un mutex a \verb"Memo", acquisire il lock all'inizio di \verb"Get" e quindi rilasciarlo prima di restituire il risultato:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.6}]
 type Memo struct {
     f     Func
     mu    sync.Mutex // fa la guardia alla cache
@@ -122,11 +127,12 @@ func (memo *Memo) Get(key string) (value interface{}, err error) {
     \end{lstlisting}
     Applicando il lock durante la chiamata a \verb"f", \verb"Get" serializza tutte le operazioni di I/O che si vogliono parallelizzare.
     Ciò che bisogna raggiungere è una cache non-bloccante, una che non serializzi le chiamate alle funzioni da memoizzare.
-    \hfill \vspace{12pt}
+    \clearpage
+    \newpage
 
     Nella prossima implementazione di \verb"Get", la goroutine chiamante acquisisce il lock due volte: una volta per il lookup e poi per l'aggiornamento nel caso il lookup ha restituito nulla.
     Nel mezzo le goroutine sono libere di usare la cache.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.6}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.7}]
 func (memo *Memo) Get(key string) (value interface{}, err error) {
     memo.mu.Lock()
     res, ok := memo.cache[key]
@@ -154,7 +160,7 @@ func (memo *Memo) Get(key string) (value interface{}, err error) {
     Nell'ultima versione di \verb"Memo", ogni elemento di map è un puntatore ad una \verb"entry" struct.
     Ogni \verb"entry" contiene il risultato memoizzato di una chiamata alla funzione \verb"f", ma in aggiunta contiene un channel chiamato \verb"ready".
     Non appena il \verb"result" di \verb"entry" è stato impostato, questo channel viene chiuso, e mandato in \textit{broadcast} a qualunque altra goroutine, per i quali da quel momento sarà sicuro leggere il risultato dalla \verb"entry".
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.7}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.8}]
 type entry struct {
     res   result
     ready chan struct{} // chiuso quando res %*\textit{è}*) pronto
@@ -169,7 +175,10 @@ type Memo struct {
     mu    sync.Mutex // fa la guardia a cache
     cache map[string]*entry
 }
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.9}]
 func (memo *Memo) Get(key string) (value interface{}, err error) {
     memo.mu.Lock()
     e := memo.cache[key]
@@ -208,8 +217,8 @@ func (memo *Memo) Get(key string) (value interface{}, err error) {
     \hfill \vspace{12pt}
 
     L'ultima implementazione di \verb"Memo" usa i mutex a guardia di una variabile map che è condivisa da ogni goroutine che chiama \verb"Get".
-    \hfill \vspace{12pt}
-
+    \clearpage
+    \newpage
     Si veda ora un'altra scelta di implementazione della cache, quella con la variabile map confinata ad una \textit{goroutine monitor} a cui ogni chiamata di \verb"Get" deve inviare un messaggio.
     \hfill \vspace{12pt}
 
@@ -218,7 +227,7 @@ func (memo *Memo) Get(key string) (value interface{}, err error) {
     Il tipo elementare del channel è una \verb"request".
     Usando questa struttura, il chiamante di \verb"Get" invia alla goroutine monitor sia la chiave che l'argomento della funzione memoizzata, e un altro channel \verb"response" sopra il quale il risultato deve essere inviato indietro quando diventa disponibile.
     Questo channel porta solo un singolo valore.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.8}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.10}]
 // Una richiesta %*\textit{è}*) un messaggio che richiede che Func sia applicato a key.
 type request struct {
     key      string
@@ -250,7 +259,7 @@ func (memo *Memo) Close() { close(memo.requests) }
     La variabile di \verb"cache" è confinata alla goroutine monitor \verb"(*Memo).server".
     Il monitor legge richieste in un ciclo fino a quando il channel request viene chiuso dal metodo \verb"Close".
     Per ogni richiesta, esso consulta la cache, crea una nuova \verb"entry" se nessuno la trova e la salva.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-7.9}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.11}]
 func (memo *Memo) server(f Func) {
     cache := make(map[string]*entry)
     for req := range memo.requests {
@@ -264,7 +273,10 @@ func (memo *Memo) server(f Func) {
         go e.deliver(req.response)
     }
 }
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-7.12}]
 func (e *entry) call(f Func, key string) {
     // Valuta la funzione.
     e.res.value, e.res.err = f(key)

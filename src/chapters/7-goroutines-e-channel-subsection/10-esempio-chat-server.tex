@@ -1,5 +1,8 @@
 \documentclass[../../thesis.tex]{subfiles}
 \begin{document}
+    \clearpage
+    \newpage
+
     \subsection{Esempio: Chat Server}\label{subsec:esempio:-chat-server}
     Un chat server permette a molti utenti di inviarsi l'un l'altro messaggi testuali.
     Ci sono quattro tipologie di goroutine in questo programma.
@@ -8,7 +11,7 @@
 
     Il compito della main goroutine è rimanere in ascolto e di accettare connessioni di rete in input da parte di client.
     Per ognuno di essi, il main crea una nuova goroutine \verb"handleConn".
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-10.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-10.1}]
 func main() {
     listener, err := net.Listen("tcp", "localhost:8000")
     if err != nil {
@@ -28,7 +31,7 @@ func main() {
     \end{lstlisting}
     Il broadcaster ha una variabile locale \verb"clients" che tiene registrato l'insieme di tutti i client correntemente connessi.
     Per ogni client viene memorizzata solo l'identità del loro channel di messaggi in uscita.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-10.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-10.2}]
 type client chan<- string // un channel di messaggi in uscita
 
 var (
@@ -66,7 +69,7 @@ func broadcaster() {
     La funzione \verb"handleConn" crea un channel di messaggi in uscita per il proprio client e annuncia l'arrivo dello stesso client al broadcaster sul channel \verb"entering".
     A questo punto legge ogni linea di testo dal client, invia ogni linea al broadcaster sul channel di messaggi in arrivo, aggiungendo come prefisso ad ogni messaggio l'identità del mittente.
     Una volta che non c'è più nulla da leggere dal client, \verb"handleConn" annuncia la partenza del client sul channel \verb"leaving" e chiude la connessione.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-10.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-10.3}]
 func handleConn(conn net.Conn) {
     ch := make(chan string) // messaggi client in uscita
     go clientWriter(conn, ch)
@@ -98,27 +101,28 @@ func clientWriter(conn net.Conn, ch <-chan string) {
     \hfill \vspace{12pt}
 
     Per il lato client invece viene utilizzato il programma esposto nel paragrafo \textbf{Unbuffered channel} di questo capitolo.
-    \hfill \vspace{12pt}
+    \clearpage
+    \newpage
 
     Una simulazione da linea di comando:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting7-10.4}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting7-10.4}]
 $ go build chat
 $ go build netcat3
 $ ./chat &
 $ ./netcat3
-You are 127.0.0.1:64208			$ ./netcat3
-127.0.0.1:64211 has arrived		You are 127.0.0.1:64211
+You are 127.0.0.1:64208         $ ./netcat3
+127.0.0.1:64211 has arrived     You are 127.0.0.1:64211
 Hi!
-127.0.0.1:64208: Hi!			127.0.0.1:64208: Hi!
-					Hi yourself.
-127.0.0.1:64211 Hi yourself.		127.0.0.1:64211: Hi yourself.
+127.0.0.1:64208: Hi!            127.0.0.1:64208: Hi!
+                                Hi yourself.
+127.0.0.1:64211 Hi yourself.    127.0.0.1:64211: Hi yourself.
 ^C
-					127.0.0.1:64208 has left
+                                127.0.0.1:64208 has left
 $ ./netcat3
-You are 127.0.0.1:64216			127.0.0.1:64216 has arrived
-					Welcome.
-127.0.0.1:64211: Welcome.		127.0.0.1:64211: Welcome.
-					^C
+You are 127.0.0.1:64216         127.0.0.1:64216 has arrived
+                                Welcome.
+127.0.0.1:64211: Welcome.       127.0.0.1:64211: Welcome.
+                                ^C
 127.0.0.1:64211 has left
     \end{lstlisting}
     Mentre il server ospita una sessione di chat per $n$ client, il programma esegue $2n+2$ goroutine comunicanti in modo concorrente, anche se necessita di un'esplicita operazione di lock.

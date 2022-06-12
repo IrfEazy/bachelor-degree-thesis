@@ -13,13 +13,13 @@
     Le nuove goroutine sono create dall'istruzione \verb"go".
     Sintatticamente, un'istruzione \verb"go" è una funzione ordinaria o una chiamata ad un metodo con la parola chiave \verb"go" come prefisso.
     Un'istruzione \verb"go" permette alla funzione di essere chiamata da una nuova e goroutine.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-1.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-1.1}]
 f()    // chiama f(); attende il risultato
 go f() // crea una nuova goroutine che chiama f(); non c'%*\textit{è}*) attesa
     \end{lstlisting}
     Nel seguente esempio, la main goroutine computa il 45esimo numero di Fibonacci.
     Dato che utilizza un algoritmo inefficiente, essa rimarrà in esecuzione per un tempo considerevole, durante il quale si vorrebbe dire all'utente che il programma è ancora in esecuzione tramite la stampa di uno ``spinner" testuale.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-1.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-1.2}]
 func main() {
     go spinner(100 * time.Millisecond)
     const n = 45
@@ -35,7 +35,10 @@ func spinner(delay time.Duration) {
         }
     }
 }
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-1.3}]
 func fib(x int) int {
     if x < 2 {
         return x

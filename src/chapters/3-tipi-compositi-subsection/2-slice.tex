@@ -16,8 +16,8 @@
 
     Più slice possono condividere lo stesso array sottostante e possono riferirsi a parti sovrapposte di esso.
     La figura mostra un array di stringhe per i mesi dell'anno e due slice sovrapposte di esso.
-    L'array è dichiarato come
-    \begin{lstlisting}[label={lst:lstlisting3-2.1}]
+    L'array è dichiarato come:
+    \begin{lstlisting}[label = {lst:lstlisting3-2.1}]
 months := [...]string{1: "January", /* ... */, 12: "December"}
     \end{lstlisting}
     quindi gennaio è \verb"months[1]" e dicembre è \verb"months[12]".
@@ -28,30 +28,34 @@ months := [...]string{1: "January", /* ... */, 12: "December"}
     La slice risultante ha \verb"j-i" elementi.
     Se \verb"i" viene omesso, è come aver inserito \verb"0", analogamente se \verb"j" viene omesso, è come aver inserito \verb"len(s)".
     Così la slice \verb"months[1:13]" si riferisce all'intera gamma dei mesi validi, così come la slice \verb"months[1:]"; mentre la slice \verb"months[:]" si riferisce all'intero array (dall'elemento \verb"0" all'elemento \verb"12").
+    \hfill \vspace{12pt}
+
+    \clearpage
+    \newpage
     Un esempio di slice sulla sequenza \verb"months":
     \begin{center}
         \includegraphics[scale = 0.25]{figures/figura-4.1}
     \end{center}
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.2}]
 Q2 := months[4:7]
 summer := months[6:9]
 fmt.Println(Q2)
 fmt.Println(summer)
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-2.3}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting3-2.3}]
 ["April" "May" "June"]
 ["June" "July" "August"]
     \end{lstlisting}
     Nell'espressione delle slice, andare oltre \verb"cap(s)" si ottiene una situazione di \verb"panic", ma andare oltre \verb"len(s)" si ottiene l'estensione della slice, quindi il risultato può diventare più ricco di quello di partenza.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.4}]
 fmt.Println(summer[:20])    // panic: fuori portata
 
 endlessSummer := summer[:5] // estende una slice (entro la sua capacit%*\textit{à}*))
 fmt.Println(endlessSummer)
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-2.5}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting3-2.5}]
 [June July August September October]
     \end{lstlisting}
     Poiché una slice contiene un puntatore ad un elemento di un array, passare una slice ad una funzione permette alla funzione di modificare gli elementi dell'array sottostante.
@@ -69,7 +73,7 @@ fmt.Println(endlessSummer)
     \hfill \vspace{12pt}
 
     L'unico confronto legale è con \verb"nil":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.6}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.6}]
 if summer == nil { /* ... */ }
     \end{lstlisting}
     Il valore zero di un tipo di slice è \verb"nil".
@@ -83,7 +87,7 @@ if summer == nil { /* ... */ }
 
     La funzione incorporata \verb"make" crea una slice di un tipo di elemento specificato, e di una certa lunghezza e capacità.
     L'argomento capacità può essere omesso, nel qual caso si intende uguale alla lunghezza.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.7}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.7}]
 make([]T, len)
 make([]T, len, cap) // uguale a make([]T, cap)[:len]
     \end{lstlisting}
@@ -99,7 +103,7 @@ make([]T, len, cap) // uguale a make([]T, cap)[:len]
     Di solito non sappiamo se una determinata chiamata ad \verb"append" causerà una riallocazione, quindi non possiamo supporre che la slice originale punti allo stesso array della slice risultante, né che si riferisca a una diversa.
     Allo stesso modo, non dobbiamo presumere che le assegnazioni ad elementi della vecchia slice si rifletteranno (o non si rifletteranno) sulla nuova slice.
     Di conseguenza, è normale assegnare il risultato di una chiamata ad \verb"append" alla stessa variabile slice il cui valore è stato passato alla chiamata della funzione \verb"append":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.8}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.8}]
 var runes []rune
 for _, r := range "Hello, World" {
     runes = append(runes, r)
@@ -107,11 +111,12 @@ for _, r := range "Hello, World" {
 fmt.Printf("%q\n", runes)
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-2.9}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting3-2.9}]
 ['H' 'e' 'l' 'l' 'o' ',' 'W' 'o' 'r' 'l' 'd']
     \end{lstlisting}
+    \
     Inoltre, la funzione \verb"append" ci permette di aggiungere più di un nuovo elemento, o anche una slice intera dello stesso tipo.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.10}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.10}]
 var x []int
 x = append(x, 1)
 x = append(x, 2, 3)
@@ -120,7 +125,7 @@ x = append(x, x...) // Aggiunge la slice x
 fmt.Println(x)
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-2.11}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting3-2.11}]
 [1 2 3 4 5 6 1 2 3 4 5 6]
     \end{lstlisting}
     Verrà spiegato più in avanti il perché dell'ellissi ``\verb"..."" nella chiamata alla funzione \verb"append" nell'ultimo esempio.
@@ -128,19 +133,19 @@ fmt.Println(x)
 
     Una slice può essere usata per implementare uno stack.
     Data uno stack di slice inizialmente vuota, possiamo spingere un nuovo valore alla fine della slice con \verb"append":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.12}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.12}]
 stack = append(stack, v) // push v
     \end{lstlisting}
     La testa dello stack è l'ultimo elemento:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.13}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.13}]
 top := stack[len(stack)-1] // top dello stack
     \end{lstlisting}
     e la restrizione dello stack effettuando il pop dell'elemento:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.14}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.14}]
 stack := stack[:len(stack)-1] // pop
     \end{lstlisting}
     Per rimuovere un elemento dal centro di una slice, conservando l'ordine degli elementi rimanenti, si usa \verb"copy" per far scorrere gli elementi con il numero più alto verso il basso di uno a riempire lo spazio vuoto generato:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-2.15}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-2.15}]
 func remove(slice []int, i int) []int {
     copy(slice[i:], slice[i+1:])
     return slice[:len(slice)-1]
@@ -152,7 +157,7 @@ func main() {
 }
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-2.16}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting3-2.16}]
 [5 6 8 9]
     \end{lstlisting}
 \end{document}

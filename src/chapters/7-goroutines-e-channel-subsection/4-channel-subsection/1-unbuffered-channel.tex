@@ -15,7 +15,7 @@
     \hfill \vspace{12pt}
 
     Per far sì che la main goroutine attenda la fine della goroutine in background prima di chiudere il programma, si può usare un channel per sincronizzare le due goroutine:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-1.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-1.1}]
 func main() {
    conn, err := net.Dial("tcp", "localhost:8000")
    if err != nil {

@@ -8,7 +8,7 @@
     \hfill \vspace{12pt}
 
     Per creare un channel viene usata la funzione built-in \verb"make":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4.1}]
 ch := make(chan int) // ch ha tipo `chan int`
     \end{lstlisting}
     Come per le map, un channel è un \textit{riferimento} ad una struttura dati creata da \verb"make".
@@ -27,7 +27,7 @@ ch := make(chan int) // ch ha tipo `chan int`
     In un'operazione di send, \verb"<-" separa il channel dall'operando valore.
     In un'operazione di receive \verb"<-" precede l'operando channel.
     Un'operazione di receive il cui risultato non viene utilizzato è un'istruzione valida.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4.2}]
 ch <- x // un'istruzione di send
 
 x = <-ch // un'espressione di receive in un'operazione di assegnamento
@@ -40,12 +40,12 @@ x = <-ch // un'espressione di receive in un'operazione di assegnamento
     \hfill \vspace{12pt}
 
     Per chiudere un channel, bisogna chiamare la funzione built-in \verb"close":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4.3}]
 close(ch)
     \end{lstlisting}
     Un channel creato con una chiamata a \verb"make" viene detto un \textit{unbuffered} channel, ma \verb"make" accetta un secondo argomento opzionale, un intero detto \textit{capacity} del channel.
     Se la capacity del channel è diversa da zero, \verb"make" crea un \textit{buffered} channel.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4.4}]
 ch = make(chan int)    // unbuffered channel
 ch = make(chan int, 0) // unbuffered channel
 ch = make(chan int, 3) // buffered channel con capacity 3

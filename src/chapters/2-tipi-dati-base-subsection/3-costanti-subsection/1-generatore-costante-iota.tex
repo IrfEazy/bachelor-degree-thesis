@@ -6,7 +6,7 @@
     \hfill \vspace{12pt}
 
     Tipi di questo tipo sono spesso chiamati \textit{enumerazioni}, o \textit{enum} in breve.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting2-3-1.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting2-3-1.1}]
 type Weekday int
 
 const (
@@ -23,15 +23,15 @@ const (
     \hfill \vspace{12pt}
 
     Possiamo usare \verb"iota" anche in espressioni più complesse, per esempio possiamo assegnare ai 5 bit più bassi di un intero senza segno un nome distinto e un'interpretazione booleana:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting2-3-1.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting2-3-1.2}]
 type Flags uint
 
 const (
     FlagUp Flags = 1 << iota // %*{\textit{è}}*) up
-    FlagBroadcast	     // supporta la capacit%*{\textit{à}}*) di accesso broadcast
-    FlagLoopback	     // %*\textit{è}*) un'interfaccia di loopback
-    FlagPointToPoint	     // appartiene a un collegamento punto a punto
-    FlagMulticast	     // supporta la capacit%*{\textit{à}}*) di accesso multicast
+    FlagBroadcast            // supporta la capacit%*{\textit{à}}*) di accesso broadcast
+    FlagLoopback             // %*\textit{è}*) un'interfaccia di loopback
+    FlagPointToPoint         // appartiene a un collegamento punto a punto
+    FlagMulticast            // supporta la capacit%*{\textit{à}}*) di accesso multicast
 )
     \end{lstlisting}
     Così come incrementa \verb"iota", ad ogni costante viene assegnato il valore di \verb"1 << iota", che valuta le potenze di due, ciascuno corrispondente ad un singolo bit.

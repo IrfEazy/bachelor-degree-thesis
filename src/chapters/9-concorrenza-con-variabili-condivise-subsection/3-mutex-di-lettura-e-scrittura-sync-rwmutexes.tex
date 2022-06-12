@@ -2,7 +2,7 @@
 \begin{document}
     \subsection{Mutex di lettura/scrittura: sync.RWMutex}\label{subsec:mutex-di-lettura/scrittura:-sync.rwmutex}
     Per permettere alle operazioni di sola lettura di essere eseguite in parallelo, e solo alle operazioni di scrittura di avere completo ed esclusivo accesso alle variabili, si può utilizzare il mutex \verb"sync.RWMutex", per poter utilizzare il lock detto \textit{multiple readers, single writer} lock:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-3.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-3.1}]
 var mu sync.RWMutex
 var balance int
 

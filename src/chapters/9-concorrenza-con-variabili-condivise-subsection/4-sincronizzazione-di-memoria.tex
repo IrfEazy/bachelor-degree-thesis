@@ -8,7 +8,7 @@
     \hfill \vspace{12pt}
 
     Si consideri l'output del seguente codice:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-4.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-4.1}]
 var x, y int
 go func() {
     x = 1                   // A1
@@ -20,9 +20,11 @@ go func() {
 }()
     \end{lstlisting}
     Dato che le due goroutine sono concorrenti e accedono alle variabili condivise senza mutua esclusione, c'è un data race, per cui il programma non può essere deterministico.
+    \clearpage
+    \newpage
 
     I possibili output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting9-4.2}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting9-4.2}]
 y:0 x:1
 x:0 y:1
 x:1 y:1
@@ -31,7 +33,7 @@ y:1 x:1
     La quarta linea può essere spiegata con la sequenza \verb"A1+B1+A2+B2" o \verb"B1+A1+A2+B2", per esempio.
 
     Comunque, queste due sequenze possono avere output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting9-4.3}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting9-4.3}]
 x:0 y:0
 y:0 x:0
     \end{lstlisting}

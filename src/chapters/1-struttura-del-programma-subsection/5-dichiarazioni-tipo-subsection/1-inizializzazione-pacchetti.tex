@@ -2,7 +2,7 @@
 \begin{document}
     \subsubsection{Inizializzazione dei pacchetti}
     L'inizializzazione dei pacchetti inizia inizializzando le variabili a livello di pacchetto nell'ordine in cui sono dichiarate, tranne che le dipendenze vengono risolte per prime:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting1-5-1.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting1-5-1.1}]
 var a = b + c // a %*\textit{è}*) inizializzato per terzo, a 3
 var b = f()   // b %*\textit{è}*) inizializzato per secondo, a 2, chiamando f
 var c = 1     // c %*\textit{è}*) inizializzato per primo, a 1
@@ -14,7 +14,7 @@ func f() int {
     Ogni variabile dichiarata a livello di pacchetto inizia la vita con il valore della sua espressione di inizializzazione, se presente, ma per alcune variabili, come le tabelle di dati, un'espressione di inizializzazione potrebbe non essere il modo più semplice per impostare il suo valore iniziale.
     In tal caso, il servizio della funzione \verb"init" può semplificare il lavoro.
     Ogni file può contenere la funzione \verb"init" la cui dichiarazione è:
-    \begin{lstlisting}[label={lst:lstlisting1-5-1.2}]
+    \begin{lstlisting}[label = {lst:lstlisting1-5-1.2}]
 func init() { codice }
     \end{lstlisting}
     Tali funzioni di \verb"init" non possono essere chiamate o referenziate, perché altrimenti sarebbero funzioni normali.

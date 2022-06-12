@@ -2,14 +2,16 @@
 \begin{document}
     \subsection{L'interfaccia error}\label{subsec:l'interfaccia-error}
     Il tipo predichiarato \verb"error" è un tipo interfaccia con un singolo metodo che restituisce un messaggio d'errore:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-6.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-6.1}]
 type error interface {
     Error() string
 }
     \end{lstlisting}
     Il modo più semplice per creare un \verb"error" è invocando \verb"errors.New", che restituisce un nuovo \verb"error" per un dato messaggio d'errore.
+    \clearpage
+    \newpage
     L'intero package \verb"errors" è lungo solo 4 righe:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-6.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-6.2}]
 package errors
 
 func New(text string) error { return &errorString{text} }

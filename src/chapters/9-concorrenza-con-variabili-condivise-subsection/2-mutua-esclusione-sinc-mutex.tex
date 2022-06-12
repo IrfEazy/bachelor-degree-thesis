@@ -3,13 +3,16 @@
     \subsection{Mutua esclusione: sync.Mutex}\label{subsec:mutua-esclusione:-sync.mutex}
     Possiamo pensare di usare un channel con capacity pari a $1$ per assicurarsi che al più una goroutine alla volta acceda ad una variabile condivisa.
     Un semaforo che conta fino ad $1$ è detto \textit{semaforo binario}.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-2.1}]
 var (
     sema    = make(chan struct{}, 1) // un semaforo binario a fare
-    				     // la guardia a balance
+                                     // la guardia a balance
     balance int
 )
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-2.2}]
 func Deposit(amount int) {
     sema <- struct{}{} // acquisizione token
     balance = balance + amount
@@ -25,7 +28,7 @@ func Balance() int {
     \end{lstlisting}
     Questo pattern di \textit{mutua esclusione} è talmente utile da essere supportato direttamente dal tipo \verb"Mutex" del package \verb"sync".
     Il metodo \verb"Lock" acqusisce un token (detto un \textit{lock}) e il suo metodo \verb"Unlock" lo rilascia:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-2.3}]
 var (
     mu      sync.Mutex // fa la guardia a balance
     balance int
@@ -58,7 +61,9 @@ func Balance() int {
 
     In sezioni critiche complesse, specialmente quelle che possono lanciare errori e quindi restituire un risultato in modo prematuro, il metodo \verb"Unlock" potrebbe non essere raggiunto.
     L'istruzione \verb"defer" di Go permette di chiamare \verb"Unlock" in modo differito, in questo modo il programmatore non ha più il dovere di capire dove andare ad inserire il metodo perché tanto la funzione differita sarà sempre l'ultima operazione eseguita dalla funzione.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.3}]
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-2.4}]
 func Balance() int {
     mu.Lock()
     defer mu.Unlock()
@@ -69,7 +74,7 @@ func Balance() int {
     \hfill \vspace{12pt}
 
     Si consideri ora la seguente funzione \verb"Withdraw" che riduce il bilancio di un ammontare specificato e restituisce \verb"true", mentre se l'account non possiede sufficienti fondi per la transazione, \verb"Withdraw" ripristina il bilancio e restituisce \verb"false".
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-2.5}]
 // NOTA: non atomica!
 func Withdraw(amount int) bool {
     Deposit(-amount)
@@ -91,7 +96,7 @@ func Withdraw(amount int) bool {
     \hfill \vspace{12pt}
 
     Un modo per superare il problema è dividere le funzioni in due parti: una funzione non esportata \verb"deposit", che richiede come ipotesi il lock sia già applicato ed esegue il lavoro, e una funzione esportata \verb"Deposit" che acquisisce il lock prima di chiamare \verb"deposit".
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-2.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-2.6}]
 func Withdraw(amount int) bool {
     mu.Lock()
     defer mu.Unlock()
@@ -108,7 +113,10 @@ func Deposit(amount int) {
     defer mu.Unlock()
     deposit(amount)
 }
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-2.7}]
 func Balance() {
     mu.Lock()
     defer mu.Unlock()

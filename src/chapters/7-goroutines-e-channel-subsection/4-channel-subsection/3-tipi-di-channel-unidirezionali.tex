@@ -3,7 +3,7 @@
     \subsubsection{Tipi di channel unidirezionali}
     Non appena un programma cresce, è naturale spezzare grandi funzioni in pezzi più piccoli.
     La funzione \verb"main" proposta alle pagine precedenti può essere suddivisa in tre funzioni:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-3.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-3.1}]
 func counter(out chan int)
 func squarer(out, in chan int)
 func printer(in chan int)
@@ -23,7 +23,7 @@ func printer(in chan int)
     \hfill \vspace{12pt}
 
     Dato che l'operazione di \verb"close" asserisce che nessuna operazione di send verrà più effettuata su un channel, allora solo la goroutine mittente potrà chiamarla, e per questa ragione è un errore a compile time provare a chiudere un channel di sola ricezione.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-3.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-3.2}]
 func counter(out chan<- int) {
     for x := 0; x < 100; x++ {
         out <- x
@@ -43,7 +43,10 @@ func printer(in <-chan int) {
         fmt.Println(v)
     }
 }
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-3.3}]
 func main() {
     naturals := make(chan int)
     squares := make(chan int)

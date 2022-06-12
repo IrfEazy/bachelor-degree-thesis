@@ -9,7 +9,7 @@
 
     Una dichiarazione di \verb"defer" viene spesso utilizzata con operazioni associate come aprire e chiudere, connettersi e disconnettersi o bloccare e sbloccare per garantire che le risorse vengano rilasciate in tutti i casi, indipendentemente dalla complessità del flusso di controllo.
     Il posto giusto per un'istruzione \verb"defer" che rilascia una risorsa è immediatamente dopo che la risorsa è stata acquisita con successo.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-8.1}]
 package ioutil
 
 func ReadFile(filename string) ([]byte, error) {
@@ -21,7 +21,7 @@ func ReadFile(filename string) ([]byte, error) {
     return ReadAll(f)
 }
     \end{lstlisting}
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-8.2}]
 var mu sync.Mutex
 var m = make(map[string]int)
 
@@ -31,10 +31,10 @@ func lookup(key string) int {
     return m[key]
 }
     \end{lstlisting}
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-8.3}]
 func bigSlowOperation() {
     defer trace("bigSlowOperation")() // non si dimentichino le parentesi
-    				      // extra per avviare la funzione
+                                      // extra per avviare la funzione
     time.Sleep(10 * time.Second)      // si simula un'operazione lenta
 }
 
@@ -45,13 +45,13 @@ func trace(msg string) func() {
 }
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-8.4}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting4-8.4}]
 2022/03/05 18:46:39 enter bigSlowOperation
 2022/03/05 18:46:49 exit bigSlowOperation (10.000589217s)
     \end{lstlisting}
     Le funzioni differite vengono eseguite \textit{dopo} che le istruzioni di ritorno hanno aggiornato le variabili dei risultati della funzione.
     Poiché una funzione anonima può accedere alle variabili della sua funzione di racchiudimento, inclusi i risultati denominati, una funzione anonima differita può osservare i risultati della funzione.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-8.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-8.5}]
 func double(x int) (result int) {
     defer func() { fmt.Printf("double(%d) = %d\n", x, result) }()
     return x + x
@@ -67,7 +67,7 @@ func main() {
 }
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-8.6}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting4-8.6}]
 double(4) = 8
 12
     \end{lstlisting}

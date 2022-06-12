@@ -3,7 +3,7 @@
     \subsection{Parsing Flags con flag.Value}\label{subsec:parsing-flags-con-flag.value}
     L'interfaccia standard \verb"flag.Value" aiuta a definire una nuova notazione per i flag da linea di comando.
     Si consideri il seguente programma che si sospende per un periodo di tempo.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-4.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-4.1}]
 var period = flag.Duration("period", 1*time.Second, "sleep period")
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
     \end{lstlisting}
     Prima di sospendersi il main stampa il periodo di tempo.
     Il package \verb"fmt" chiama il metodo \verb"String" di \verb"time.Duration" a stampare il periodo di tempo in formato di secondi, ma con una notazione user-friendly:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting6-4.2}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting6-4.2}]
 $ go build sleep
 $ ./sleep
 Sleeping for 1s...
@@ -23,7 +23,7 @@ Sleeping for 1s...
     Di default, il periodo di sospensione è di un secondo, ma può essere cambiato tramite il flag da linea di comando \verb"-period".
     La funzione \verb"flag.Duration" crea una variabile flag di tipo \verb"time.Duration" e permette all'utente di specificare la durata nel formato che più preferisce l'utente, incluso la stessa notazione stampata dal metodo \verb"String".
     Quesa simmetria di design porta ad un'interfaccia utente ordinata.
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting6-4.3}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting6-4.3}]
 $ ./sleep -period 50ms
 Sleeping for 50ms...
 $ ./sleep -period 2m30s
@@ -35,7 +35,7 @@ inval value "1 day" for flag -period: time: invalid duration 1 day
     \end{lstlisting}
     Proprio grazie all'utilità dei valori di durata dei flag, questa funzionalità è definita all'interno del package \verb"flag", ma è semplice definire una nuova notazione di un flag per il proprio tipo di dati.
     Bisogna solo definire un tipo che soddisfi l'interfaccia \verb"flag.Value", che ha la seguente dichiarazione:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-4.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-4.4}]
 package flag
 
 // Value is the interface to the value stored in a flag.
@@ -53,7 +53,7 @@ type Value interface {
     Un altro esempio di definizione dei flag può essere la definizione del tipo \verb"celsiusFlag" che stabilisce se una temperatura è indicata in Celsius o in Fahrenheit con un'opportuna conversione.
     Si noti che \verb"celsiusFlag" incapsula un \verb"Celsius" (tipo definito nei capitoli precedenti), quindi si guadagna il metodo \verb"String" definito al tempo.
     Per soddisfare \verb"flag.Value" bisogna solo dichiarare il metodo \verb"Set":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-4.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-4.5}]
 // *celsiusFlag soddisfa l'interfaccia flag.Value.
 type celsiusFlag struct { Celsius }
 
@@ -83,7 +83,7 @@ func (f *celsiusFlag) Set(s string) error {
     La chiamata a \verb"Var" aggiunge il flag all'insieme di flag della linea di comando per l'applicazione, ovvero la variabile globale \verb"flags.CommandLine".
     I programmi con interfacce di linea di comando insolitamente complesse possono avere numerose variabili di questo tipo.
     La chiamata a \verb"Var" assegna un argomento \verb"*celsiusFlag" al parametro \verb"flag.Value", forzando il compilatore a controllare che \verb"*celsiusFlag" abbia i metodi necessari.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-4.6}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-4.6}]
 // CelsiusFlag definisce un flag Celsius con il nome specificato,
 // valore di defaul e uso, e ritorna l'indirizzo della variabile flag.
 // L'argomento flag deve avere una quantit%*\textit{à}*) e un'unit%*\textit{à}*), p.e. "100C".
@@ -94,7 +94,7 @@ func CelsiusFlag(name string, value Celsius, usage string) *Celsius {
 }
     \end{lstlisting}
     Ora è possibile iniziare ad usare il nuovo flag nel programma
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-4.7}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-4.7}]
 var temp = tempconv.CelsiusFlag("temp", 20.0, "the temperature")
 
 func main() {
@@ -102,8 +102,10 @@ func main() {
     fmt.Println(*temp)
 }
     \end{lstlisting}
+    \clearpage
+    \newpage
     Un esempio d'uso:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting6-4.8}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting6-4.8}]
 $ ./tempflag
 20°C
 $ ./tempflag -temp -18C

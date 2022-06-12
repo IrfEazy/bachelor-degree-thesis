@@ -3,7 +3,7 @@
     \subsubsection{Confronto tra struct}
     Se tutti i campi di una struct sono comparabili, la struct stessa è comparabile, quindi due espressioni di quel tipo possono essere confrontate usando \verb"==" o \verb"!=".
     L'operazione \verb"==" confronta i campi corrispondenti delle due struct in ordine, quindi le due espressioni stampate qui sotto sono equivalenti:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-2.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-2.1}]
 type Point struct { X, Y int }
 
 p := Point{1, 2}
@@ -12,7 +12,7 @@ fmt.Println(p.X == q.X && p.Y == q.Y)
 fmt.Println(p == q)
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-4-2.2}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting3-4-2.2}]
 false
 false
     \end{lstlisting}

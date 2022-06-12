@@ -7,11 +7,11 @@
     \hfill \vspace{12pt}
 
     I function literal permettono di definire una funzione nel loro punto d'uso:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-6.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-6.1}]
 strings.Map(func(r rune) rune { return r + 1 }, "HAL-9000")
     \end{lstlisting}
     Ancora più importante, le funzioni definite in questo modo hanno accesso all'intero ambiente lessicale, quindi la funzione interna può riferirsi alle variabili dalla funzione che la racchiude:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-6.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-6.2}]
 func squares() func() int {
     var x int
     return func() int {
@@ -19,7 +19,10 @@ func squares() func() int {
         return x * x
     }
 }
-
+    \end{lstlisting}
+    \clearpage
+    \newpage
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-6.3}]
 func main() {
     f := squares()
     fmt.Println(f())
@@ -29,7 +32,7 @@ func main() {
 }
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-6.3}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting4-6.4}]
 1
 4
 9

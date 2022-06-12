@@ -5,7 +5,7 @@
     \hfill \vspace{12pt}
 
     La regola di assegnabilità per le interfacce è molto semplice: un'espressione può essere assegnata a un'interfaccia solo se il suo tipo soddisfa l'interfaccia.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-3.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-3.1}]
 var w io.Writer
 w = os.Stdout         // OK: *os.File ha il metodo Write
 w = new(bytes.Buffer) // OK: *bytes.Buffer ha il metodo Write
@@ -18,13 +18,13 @@ rwc = new(bytes.Buffer) // compile error: *bytes.Buffer non ha il metodo
                         // Close
     \end{lstlisting}
     La regola si applica anche quando il lato destro è esso stesso un'interfaccia:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-3.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-3.2}]
 w = rwc // OK: io.ReadWriteCloser ha il metodo Write
 rwc = w // compile error: io.Writer non ha il metodo Close
     \end{lstlisting}
     Il tipo \verb"interface{}", detto \textit{interfaccia vuota}, è indispensabile.
     Poiché il tipo di interfaccia vuota non pone richieste sui tipi che lo soddisfano, possiamo assegnare \textit{qualsiasi} valore all'interfaccia vuota.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-3.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-3.3}]
 var any interface{}
 any = true
 any = 12.34
@@ -48,7 +48,7 @@ any = new(bytes.Buffer)
     Un tipo concreto può soddisfare molte interfacce non correlate.
     Immaginiamo di avere un programma che organizza o vende manufatti culturali digitalizzati come musica, film e libri.
     Si potrebbe definire la seguente serie di tipi concreti:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-3.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-3.4}]
 Album
 Book
 Movie
@@ -59,7 +59,7 @@ Track
     \end{lstlisting}
     Possiamo esprimere ogni astrazione di interesse come un'interfaccia.
     Alcune proprietà sono comuni a tutti gli artefatti, come il titolo, la data di creazione e la lista dei creatori (autori e artisti).
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-3.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-3.5}]
 type Artifact interface {
     Title() string
     Creators() []string
@@ -68,7 +68,7 @@ type Artifact interface {
     \end{lstlisting}
     Le altre proprietà sono ristrette ad alcuni dei tipi di artefatti.
     La prioprietà relative ai testi stampati sono rilevanti solo ai libri e ai magazine, mentre solo i film e gli episodi televisivi hanno la proprietà della risoluzione dello schermo.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-3.6}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-3.6}]
 types Text interface {
     Pages() int
     Words() int
@@ -90,7 +90,7 @@ type Video interface {
     \end{lstlisting}
     Queste interfacce permettono di aggregare tipi concreti e di esprimere gli aspetti che condividono.
     Per esempio, se bisogna gestire gli oggetti \verb"Audio" e \verb"Video" allo stesso modo, si può definire un'interfaccia \verb"Streamer" per rappresentare gli aspetti che hanno in comune senza cambiare alcun tipo dichiarato già esistente.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-3.7}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-3.7}]
 type Streamer interface {
     Stream() (io.ReadCloser, error)
     RunningTime() time.Duration

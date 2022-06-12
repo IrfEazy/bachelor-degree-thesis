@@ -4,27 +4,27 @@
     Una stringa è una sequenza immutabile di byte.
     Le stringhe possono contenere dati arbitrari, inclusi byte con valore \verb"0", ma di solito contengono testo leggibile dall'uomo.
     Le stringhe di testo sono convenzionalmente interpretate come sequenze codificate UTF-8 di punti di codice Unicode (rune).
-    \begin{lstlisting}[frame = single,label={lst:lstlisting2.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting2.1}]
 s := "hello, world"
 fmt.Println(len(s))
 fmt.Println(s[0], s[7])
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting2.2}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting2.2}]
 12
 104 119 ('h' and 'w')
     \end{lstlisting}
     Il tentativo di accedere a un byte al di fuori di questo intervallo si traduce in un \verb"panic":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting2.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting2.3}]
 C := s[len(s)] // panic: indice fuori dal range
     \end{lstlisting}
     L'operazione di \textit{sottostringa} \verb"s[i:j]" produce una nuova stringa composta dai byte della stringa originale che inizia dall'indice \verb"i" e continua fino, ma non include, il byte all'indice \verb"j".
     Il risultato contiene \verb"j-i" byte.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting2.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting2.4}]
 fmt.Println(s[0:5])
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting2-2.5}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting2-2.5}]
 hello
     \end{lstlisting}
     Uno o entrambi gli operandi \verb"i" e \verb"j" possono essere omessi, nel qual caso i valori predefiniti di \verb"0" (l'inizio della stringa) e \verb"len(s)" (la sua fine) sono assunti, rispettivamente.

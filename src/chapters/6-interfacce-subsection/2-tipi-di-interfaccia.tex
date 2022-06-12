@@ -5,7 +5,7 @@
     \hfill \vspace{12pt}
 
     Un \verb"Reader" rappresenta qualsiasi tipo da cui è possibile leggere byte e un \verb"Closer" un qualsiasi valore che è possibile chiudere, come un file o una connessione di rete.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-2.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-2.1}]
 package io
 
 type Reader interface {
@@ -17,7 +17,7 @@ type Closer interface {
 }
     \end{lstlisting}
     Si trovano anche dichiarazioni di nuovi tipi di interfaccia come combinazioni di quelli esistenti.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-2.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-2.2}]
 type ReadWriter interface {
     Reader
     Writer
@@ -32,14 +32,16 @@ type ReadWriteCloser interface {
     La sintassi usata sopra, che assomiglia all'embedding di struct, permette di definire un'altra interfaccia senza dover scrivere tutti i suoi metodi.
     Questa operazione è detta \textit{embedding} di un'interfaccia.
     Si poteva anche scrivere l'interfaccia \verb"io.ReadWriter" senza fare l'embedding, anche se in modo meno succinto, in questo modo:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-2.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-2.3}]
 type ReadWriter interface {
     Read(p []byte) (n int, err error)
     Write(p []byte) (n int, err error)
 }
     \end{lstlisting}
+    \clearpage
+    \newpage
     o anche utilizzando un mix dei due stili:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-2.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-2.4}]
 type ReadWriter interface {
     Read(p []byte) (n int, err error)
     Writer

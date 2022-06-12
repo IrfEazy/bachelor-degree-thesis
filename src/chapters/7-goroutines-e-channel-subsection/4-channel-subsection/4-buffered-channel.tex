@@ -5,15 +5,16 @@
     La dimensione massima della coda è decisa quando viene creato il channel, dall'argomento capacity in \verb"make".
     La seguente istruzione crea un buffered channel in grado di ospitare al più tre valori \verb"string".
     La figura mostra anche una rappresentazione di \verb"ch" e del channel a cui si riferisce.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-4.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-4.1}]
 ch = make(chan string, 3)
     \end{lstlisting}
-    \center\includegraphics[scale = 0.125]{figure-8.2}
-
-    \justifying\noindent Un'operazione di send su un buffered channel inserisce un elemento in coda alla fila d'attesa , e l'operazione di receive rimove un elemento dalla testa della fila.
+    \begin{center}
+        \includegraphics[scale = 0.125]{figure-8.2}
+    \end{center}
+    Un'operazione di send su un buffered channel inserisce un elemento in coda alla fila d'attesa , e l'operazione di receive rimove un elemento dalla testa della fila.
     Se il channel è pieno, l'operazione di send blocca la propria goroutine fino a quando non viene fatto spazio in seguito all'operazione di receive di un'altra goroutine.
     Al contrario, se il channel è vuoto, un'operazione di receive blocca la propria goroutine fino a quando un'altra goroutine non esegue un'operazione di send sullo stesso channel.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-4.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-4.2}]
 ch <- "A"
 ch <- "B"
 ch <- "C"
@@ -22,27 +23,25 @@ ch <- "C"
     \begin{center}
         \includegraphics[scale = 0.125]{figure-8.3}
     \end{center}
-
-    \noindent Se si riceve un valore,
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-4.3}]
+    Se si riceve un valore,
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-4.3}]
 fmt.Println(<-ch)
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting7-4-4.4}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting7-4-4.4}]
 A
     \end{lstlisting}
     il channel non sarà più nè pieno nè vuoto, quindi sia un'operazione di send che una di receive potranno procedere senza essere bloccati.
     In questo modo, il buffer del channel separa le goroutine mittenti e destinatari.
-    \center
-    \includegraphics[scale = 0.125]{figure-8.4}
-
-    \justifying
-    \noindent Nel caso un programma voglia conoscere la capacità del buffer del channel può richiamare la funzione \verb"cap":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-4.5}]
+    \begin{center}
+        \includegraphics[scale = 0.125]{figure-8.4}
+    \end{center}
+    Nel caso un programma voglia conoscere la capacità del buffer del channel può richiamare la funzione \verb"cap":
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-4.5}]
 fmt.Println(cap(ch))
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting7-4-4.6}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting7-4-4.6}]
 3
     \end{lstlisting}
     Quando applicato al channel, la funzione \verb"len" restituisce il numero di elementi al momento presenti nel buffer.

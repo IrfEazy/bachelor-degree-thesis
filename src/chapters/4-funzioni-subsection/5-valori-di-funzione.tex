@@ -3,7 +3,7 @@
     \subsection{Valori di funzione}\label{subsec:valori-di-funzione}
     Le funzioni sono \textit{valori di prima classe} in Go: come altri valori, i valori di funzione hanno tipi, e possono essere assegnati a variabili o passati a o restituiti da funzioni.
     Un valore di funzione può essere chiamato come qualsiasi altra funzione.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-5.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-5.1}]
 func square(n int) int { return n * n }
 func negative(n int) int { return -n }
 func product(m, n int) int { return m * n }
@@ -16,22 +16,24 @@ fmt.Println(f(3))
 fmt.Printf("%T\n", f)
 
 f = product // compile error: non pu%*\textit{ò}*) assegnare func(int, int) int a
-	    // func(int) int
+            // func(int) int
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-5.2}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting4-5.2}]
 9
 -3
 func(int) int
     \end{lstlisting}
     Il valore zero di un tipo di funzione è \verb"nil".
-    Chiamare un valore di funzione nil provoca il panic:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-5.3}]
+    \clearpage
+    \newpage
+    Chiamare un valore di funzione \verb"nil" provoca il panic:
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-5.3}]
 var f func(int) int
 f(3) // panic: chiamata ad una funzione nil
     \end{lstlisting}
     I valori di funzione possono essere confrontati con ``nil":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-5.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-5.4}]
 var f func(int) int
 if f != nil {
     f(3)
@@ -43,7 +45,7 @@ if f != nil {
     I valori delle funzioni ci permettono di parametrizzare le nostre funzioni non solo sui dati, ma anche sul comportamento.
     Le librerie standard contengono molti esempi.
     Per esempio, \verb"strings.Map" applica una funzione ad ogni carattere di una stringa, unendo i risultati per creare un'altra stringa.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting4-5.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting4-5.5}]
 func add1(r rune) rune { return r + 1 }
 
 fmt.Println(strings.Map(add1, "HAL-9000"))
@@ -51,7 +53,7 @@ fmt.Println(strings.Map(add1, "VMS"))
 fmt.Println(strings.Map(add1, "Admix"))
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting4-5.6}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting4-5.6}]
 IBM.:111
 WNT
 Benjy

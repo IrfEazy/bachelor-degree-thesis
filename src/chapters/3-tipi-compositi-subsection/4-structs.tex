@@ -6,7 +6,7 @@
     \hfill \vspace{12pt}
 
     Queste due istruzioni dichiarano un tipo di struct chiamato \verb"Employee" e una variabile chiamata \verb"dilbert" che è un'istanza di un \verb"Employee":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4.1}]
 type Employee struct {
     ID 	      int
     Name      string
@@ -21,38 +21,38 @@ var dilbert Employee
     \end{lstlisting}
     I singoli campi di \verb"dilbert" sono accessibili usando la notazione a punti (\verb"dilbert.Name" e \verb"dilbert.DoB").
     Poiché \verb"dilbert" è una variabile, anche i suoi campi sono variabili, quindi possiamo assegnare ad un campo:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4.2}]
 dilbert.Salary -= 5000
     \end{lstlisting}
     o prendere il suo indirizzo e accedervi tramite un puntatore:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4.3}]
 position := &dilbert.Position
 *position = "Senior " + *position
     \end{lstlisting}
     La notazione a punti funziona anche con un puntatore a una struct:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4.4}]
 var employeeOfTheMonth *Employee = &dilbert
 employeeOfTheMonth.Position += " (proactive team player)"
     \end{lstlisting}
     Dove l'ultima istruzione è equivalente a
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4.5}]
 (*employeeOfTheMonth).Position += " (proactive team player)"
     \end{lstlisting}
     I campi sono di solito scritti uno per riga, con il nome del campo che precede il suo tipo, ma i campi consecutivi dello stesso tipo possono essere combinati, come con \verb"Name" e \verb"Address" qui:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4.6}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4.6}]
 type Employee struct {
-    ID		  int
+    ID            int
     Name, Address string
-    DoB		  time.Time
-    Position	  string
-    Salary	  int
-    ManagerID	  int
+    DoB           time.Time
+    Position      string
+    Salary        int
+    ManagerID     int
 }
     \end{lstlisting}
     Un tipo di struct denominato \verb"S" non può dichiarare un campo dello stesso tipo \verb"S": un valore aggregato non può contenere se stesso.
     Ma \verb"S" può dichiarare un campo del tipo di puntatore \verb"*S", che ci permette di creare struct di dati ricorsive come liste concatenate e alberi.
     Questo è illustrato nel codice qui sotto, che utilizza un albero binario per implementare un ordinamento di inserimento:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4.7}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4.7}]
 type tree struct {
     value       int
     left, right *tree

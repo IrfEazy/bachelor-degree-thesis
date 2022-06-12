@@ -11,7 +11,7 @@
     \hfill \vspace{12pt}
 
     Nelle seguenti istruzioni, la variabile \verb"w" assume tre valori differenti.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-5.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-5.1}]
 var w io.Writer
 w = os.Stdout
 w = new(bytes.Buffer)
@@ -19,7 +19,7 @@ w = nil
     \end{lstlisting}
     Vediamo nel dettaglio cosa accade dopo l'esecuzione di ogni istruzione.
     Il primo dichiara \verb"w":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-5.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-5.2}]
 var w io.Writer
     \end{lstlisting}
     In Go, le variabili sono sempre inizializzate ad un valore ben definito, e le interfacce non fanno eccezione.
@@ -30,7 +30,7 @@ var w io.Writer
     \hfill \vspace{12pt}
 
     La seconda istruzione assegna un valore di tipo \verb"*os.File" a \verb"w":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-5.3}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-5.3}]
 w = os.Stdout
     \end{lstlisting}
     Questo assegnamento coinvolge una conversione implicita da un tipo concreto al tipo di interfaccia, ed è equivalente alla conversione esplicita \verb"io.Writer(os.Stdout)".
@@ -45,14 +45,14 @@ w = os.Stdout
     \hfill \vspace{12pt}
 
     La terza istruzione assegna un valore di tipo \verb"*bytes.Buffer" al valore di interfaccia:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-5.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-5.4}]
 w = new(bytes.Buffer)
     \end{lstlisting}
     Il tipo dinamico è ora \verb"*bytes.Buffer" e il valore dinamico è un puntatore al nuovo buffer allocato.
     \center\includegraphics[scale = 0.25]{figura-7.3}
 
     \justifying\noindent Infine, la quarta istruzione assegna \verb"nil" al valore di interfaccia:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-5.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-5.5}]
 w = nil
     \end{lstlisting}
     Questo fa il reset di entrambi i suoi componenti a \verb"nil", ripristinando \verb"w" allo stato della sua dichiarazione.
@@ -60,7 +60,7 @@ w = nil
 
     I valori di interfaccia possono essere confrontati usando \verb"==" e \verb"!=", quindi utilizzabili anche come chiavi per le map o come gli operandi di un'istruzione switch.
     Bisogna comunque fare attenzione, perché se le interfacce hanno stessi tipi dinamici, ma non confrontabili tra loro, allora il confronto fallisce con il lancio di un panic.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting6-5.6}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting6-5.6}]
 var x interface{} = []int{1, 2, 3}
 fmt.Println(x == x) // panic: i tipi []int non sono confrontabili
     \end{lstlisting}

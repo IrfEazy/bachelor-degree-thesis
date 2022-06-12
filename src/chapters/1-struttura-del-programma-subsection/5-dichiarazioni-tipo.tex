@@ -6,18 +6,15 @@
 
     Una dichiarazione di \verb"type" definisce un nuovo \textit{tipo denominato} che ha lo stesso \textit{tipo sottostante} di un tipo esistente.
     Il tipo denominato fornisce un modo per separare usi diversi e forse incompatibili del tipo sottostante in modo che non possano essere mescolati involontariamente.
-    \begin{lstlisting}[label={lst:lstlisting1-5.1}]
+    \begin{lstlisting}[label = {lst:lstlisting1-5.1}]
 type nome tipoSottostante
     \end{lstlisting}
     Le dichiarazioni di tipo appaiono più spesso a livello di pacchetto, e se il nome viene esportato è accessibile anche da altri pacchetti.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting1-5.2}]
-package tempconv
-
-import "fmt"
-
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting1-5.2}]
 type Celsius float64
 type Fahrenheit float64
-
+    \end{lstlisting}
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting1-5.3}]
 const (
     AbsoluteZeroC Celsius = -273.15
     FreezingC	  Celsius = 0

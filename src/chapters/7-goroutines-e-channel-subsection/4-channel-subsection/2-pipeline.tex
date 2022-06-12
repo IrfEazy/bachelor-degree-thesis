@@ -4,11 +4,12 @@
     I channel possono essere usati per connettere le goroutine insieme cosicché l'output di uno è l'input dell'altro.
     Questi è detto \textit{pipeline}.
     Il seguente programma consiste di tre goroutine connesse da due channel, come mostrato schematicamente in figura.
-    \center\includegraphics[scale = 0.25]{figure-8.1}
-
-    \justifying\noindent La prima goroutine, \textit{counter}, genera gli interi 0, 1, 2, \ldots, e li invia su un channel alla seconda goroutine, \textit{squarer}, che riceve ogni valore, lo eleva al quadrato, e invia il risultato su un altro channel alla terza goroutine, \textit{printer}, che riceve i valori e li stampa.
+    \begin{center}
+        \includegraphics[scale = 0.25]{figure-8.1}
+    \end{center}
+    La prima goroutine, \textit{counter}, genera gli interi 0, 1, 2, \ldots, e li invia su un channel alla seconda goroutine, \textit{squarer}, che riceve ogni valore, lo eleva al quadrato, e invia il risultato su un altro channel alla terza goroutine, \textit{printer}, che riceve i valori e li stampa.
     Per chiarezza di quest'esempio, si è intenzionalmente scelto una funzione davvero semplice per spiegare il funzionamento della pipeline.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-2.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-2.1}]
 func main() {
     naturals := make(chan int)
     squares := make(chan int)
@@ -35,8 +36,10 @@ func main() {
 }
     \end{lstlisting}
     Se il mittente conosce che non ci sono più valori da inviare sul channel, è bene comunicarlo alla goroutine destinataria così da non farlo attendere.
+    \clearpage
+    \newpage
     Questo è realizzato con la \textit{chiusura} del channel con la funzione built-in \verb"close":
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-2.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-2.2}]
 close(naturals)
     \end{lstlisting}
     Dopo che un channel è stato chiuso, qualunque altra operazione di send restituirà un panic.
@@ -46,8 +49,7 @@ close(naturals)
 
     Non esiste un modo diretto per capire se un channel è stato chiuso, ma esiste una variante dell'operazione di receive che produce due risultati: l'elemento ricevuto dal channel più un valore booleano, denominato per convenzione \verb"ok", che è \verb"true" nel caso di un'operazione di receive completata con successo e \verb"false" nel caso di un'operazione di receive su un channel chiuso e svuotato.
     Usando questa funzionalità, il ciclo di squarer può essere modificato così da interromperlo quando il channel \verb"naturals" è svuotato e chiudere a cascata il channel \verb"squares".
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-2.3}]
-// Squarer
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-2.3}]
 go func() {
     for {
         x, ok := <-naturals
@@ -61,7 +63,7 @@ go func() {
     \end{lstlisting}
     Il linguaggio permette di usare un ciclo \verb"range" per iterare anche su un channel.
     Questo è sintatticamente più conveniente per ricevere tutti i valori inviati su un channel e terminare il ciclo dopo l'ultimo.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-4-2.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-4-2.4}]
 func main() {
     naturals := make(chan int)
     squares := make(chan int)

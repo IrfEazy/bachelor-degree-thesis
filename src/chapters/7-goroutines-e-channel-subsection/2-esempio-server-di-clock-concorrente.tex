@@ -5,7 +5,7 @@
     \hfill \vspace{12pt}
 
     Esponiamo come primo esempio un clock server sequenziale che scrive l'orario corrente al client ad ogni secondo:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-2.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-2.1}]
 // Clock1 %*\textit{è}*) un server TCP che periodicamente scrive l'orario.
 func main() {
     listener, err := net.Listen("tcp", "localhost:8000")
@@ -42,7 +42,7 @@ func handleConn(c net.Conn) {
     Finché \verb"net.Conn" soddisfa l'interfaccia \verb"io.Writer", si può scrivere direttamente al client.
     Il ciclo finisce quando la scrittura fallisce, che molto probabilmente accade quando il client si disconnette, momento in cui \verb"handleConn" chiude il proprio lato della connessione usando la chiama differita a \verb"Close" e torna ad attendere la richiesta di una connessione. \\
     Sul lato client il programma è il seguente:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-2.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-2.2}]
 // Netcat1 %*\textit{è}*) un client TCP di sola lettura
 func main() {
     conn, err := net.Dial("tcp", "localhost:8000")
@@ -61,20 +61,20 @@ func mustCopy(dst io.Writer, src io.Reader) {
     \end{lstlisting}
     Questo programma legge i dati dalla connessione e li scrive sullo standard output fino a quando non viene incontrato una condizione di end-of-file o un errore.
     Eseguendo due client allo stesso tempo si esegue il seguente risultato:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting7-2.3}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting7-2.3}]
 $ ./netcat1
 13:56:34
-13:56:35		$ ./netcat1
+13:56:35        $ ./netcat1
 13:56:36
 ^C
-			13:56:38
-			13:56:39
-			13:56:40
-			^C
+                13:56:38
+                13:56:39
+                13:56:40
+                ^C
     \end{lstlisting}
     In questa implementazione il secondo client è obbligato ad aspettare che il primo client finisca perché il server è \textit{sequenziale}; il server si occupa di un client alla volta.
     Per rendere il server concorrente serve solo una piccola modifica: l'aggiunta della parola chiave \verb"go" alla chiamata di \verb"handleConn" fa sì che ogni chiamata venga eseguita nella propria goroutine.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting7-2.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting7-2.4}]
 func main() {
     listener, err := net.Listen("tcp", "localhost:8000")
     if err != nil {
@@ -91,19 +91,19 @@ func main() {
 }
     \end{lstlisting}
     Ora più client possono ricevere l'orario contemporaneamente:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting7-2.5}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting7-2.5}]
 $ ./netcat2
 13:58:54
-13:58:55		$ ./netcat2
-13:58:56		13:58:56
-13:58:57		13:58:57
-13:58:58		13:58:58
-13:58:59		^C
+13:58:55        $ ./netcat2
+13:58:56        13:58:56
+13:58:57        13:58:57
+13:58:58        13:58:58
+13:58:59        ^C
 13:59:00
-13:59:01		$ ./netcat2
-13:59:02		13:59:02
-13:59:03		13:59:03
-^C			13:59:04
-			^C
+13:59:01        $ ./netcat2
+13:59:02        13:59:02
+13:59:03        13:59:03
+^C              13:59:04
+                ^C
     \end{lstlisting}
 \end{document}

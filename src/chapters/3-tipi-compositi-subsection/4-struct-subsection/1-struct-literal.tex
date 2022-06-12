@@ -2,7 +2,7 @@
 \begin{document}
     \subsubsection{Struct literal}
     Un valore di un tipo di struttura può essere scritto usando una \textit{struct literal} che specifica i valori per i suoi campi.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-1.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-1.1}]
 type Point struct { X, Y int }
 
 p := Point{1, 2}
@@ -19,7 +19,7 @@ p := Point{1, 2}
 
     I valori di struct possono essere passati come argomenti alle funzioni e restituiti da esse.
     Per esempio, questa funzione scala un ``Punto" di un fattore specificato:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-1.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-1.2}]
 func Scale(p Point, factor int) Point {
     return Point{p.X * factor, p.Y * factor}
 }
@@ -27,11 +27,11 @@ func Scale(p Point, factor int) Point {
 fmt.Println(Scale(Point{1, 2}, 5))
     \end{lstlisting}
     Output:
-    \begin{lstlisting}[language = bash, frame = L,label={lst:lstlisting3-4-1.3}]
+    \begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting3-4-1.3}]
 {5 10}
     \end{lstlisting}
     Per efficienza, la struct più grande è solitamente passata a o restituita da funzioni indirettamente usando un puntatore
-    \begin{lstlisting}[frame = single,label={lst:lstlisting3-4-1.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting3-4-1.4}]
 func Bonus(e *Employee, percent int) int {
     return e.Salary * percent / 100
 }

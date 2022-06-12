@@ -31,7 +31,7 @@
     \hfill \vspace{12pt}
 
     Prendiamo un tipico esempio per chiarire la serietà del problema:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-1.1}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-1.1}]
 var balance int
 
 func Deposit(amount int) { balance = balance + amount }
@@ -39,8 +39,10 @@ func Deposit(amount int) { balance = balance + amount }
 func Balance() int { return balance }
     \end{lstlisting}
     Se in questo programma si richiamano le funzioni in modo concorrente, \verb"Balance" non è più garantito essere corretto.
+    \clearpage
+    \newpage
     Si considerino le seguenti goroutine:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-1.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-1.2}]
 // Alice:
 go func() {
     bank.Deposit(200)		     // A1
@@ -55,11 +57,11 @@ go bank.Deposit(100) // B
     Il problema è che B può accadere simultaneamente ad A1, e quindi avere un risultato di questo tipo:
     \begin{lstlisting}[label={lst:lstlisting9-1.3}]
 Data	race
-	0
-A1r	0		... = balance + amount
-B	100
-A1w	200		balance = ...
-A2	"= 200"
+        0
+A1r     0       ... = balance + amount
+B       100
+A1w     200     balance = ...
+A2      "= 200"
     \end{lstlisting}
     Dopo \verb"A1r", l'espressione \verb"balance + amount" vale $200$, così questo sarà il valore scritto durante \verb"A1w", anche se nel frattempo viene eseguito un'altro deposito.
     Il bilancio finale è di soli \dollar 200.
@@ -75,7 +77,7 @@ A2	"= 200"
     Il primo modo per evitare una race condition è non fare scritture.
     Si consideri la seguente map, popolata in modo pigro in quanto ogni chiave è richiesta per la prima volta.
     Se \verb"Icon" è invocato in modo sequenziale, il programma lavora bene, ma se \verb"Icon" è invocato in modo concorrente, allora c'è un data race per l'accesso alla map.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-1.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-1.4}]
 var icons = make(map[string]image.Image)
 
 func loadIcon(name string) image.Image
@@ -90,9 +92,10 @@ func Icon(name string) image.Image {
     return icon
 }
     \end{lstlisting}
+    Se invece venisse inizializzata la map con tutte le entry necessarie prima di creare la seconda goroutine e non la si modificasse mai più, allora si avrebbe la concurrency-safe perché non ci sarebbero scritture.
+    \clearpage
     \newpage
-    \noindent Se invece venisse inizializzata la map con tutte le entry necessarie prima di creare la seconda goroutine e non la si modificasse mai più, allora si avrebbe la concurrency-safe perché non ci sarebbero scritture.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-1.5}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-1.5}]
 var icons = map[string]image.Image {
     "spades.png":   loadIcon("spades.png"),
     "hearts.png":   loadIcon("hearts.png"),
@@ -110,7 +113,7 @@ func Icon(name string) image.Image { return icons[name] }
     Il mantra di Go è infatti ``Do not communicate by sharing memory;
     instead, share memory by communicating".
     Una goroutine che gestisce l'accesso ad una variabile confinata tramite l'uso di richieste su channel è detta \textit{goroutine monitor} per quella variabile.
-    \begin{lstlisting}[frame = single,label={lst:lstlisting9-1.6}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting9-1.6}]
 var deposits = make(chan int) // invia l'ammontare di deposito
 var balances = make(chan int) // riceve il bilancio
 

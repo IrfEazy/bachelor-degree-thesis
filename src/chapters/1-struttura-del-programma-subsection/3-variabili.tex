@@ -3,7 +3,7 @@
     \subsection{Variabili}\label{subsec:variabili}
     Una dichiarazione di una \verb"var" crea una variabile di un particolare tipo, le dà un nome, e imposta il suo valore iniziale.
     Ogni istruzione ha una forma generale:
-    \begin{lstlisting}[label={lst:lstlisting1-3.1}]
+    \begin{lstlisting}[label = {lst:lstlisting1-3.1}]
 var nome tipo = espressione
     \end{lstlisting}
     In particolare, può essere omesso uno tra il \verb"tipo" e \verb"= espressione" ma entrambi non possono mancare nella dichiarazione.
@@ -13,7 +13,7 @@ var nome tipo = espressione
 
     Il meccanismo a valore zero assicura che una variabile abbia sempre un valore ben definito del suo tipo;
     non ci sono variabili non inizializzate in Go. Per esempio,
-    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3.2}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting1-3.2}]
 var s string
     \end{lstlisting}
     assegna ad \verb"s" una stringa vuota \verb|""|, così da poterlo utilizzare in seguito senza causare errore o comportamento imprevedibile.
@@ -21,13 +21,13 @@ var s string
     \hfill \vspace{12pt}
 
     È possibile dichiarare e, facoltativamente, inizializzare un insieme di variabili in una singola dichiarazione, con un elenco di espressioni corrispondenti:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3.3}]
-var i, j, k int			// int, int, int
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting1-3.3}]
+var i, j, k int                 // int, int, int
 var b, f, s = true, 2.3, "four"	// bool, float64, string
     \end{lstlisting}
     Le variabili visibili a livello di pacchetto vengono inizializzate prima dell'avvio del \verb"main", e le variabili locali vengono inizializzate quando si incontrano le loro dichiarazioni mentre la funzione è in esecuzione.\\
     Un insieme di variabili può anche essere inizializzato chiamando una funzione che restituisce più valori:
-    \begin{lstlisting}[frame = single,label={lst:lstlisting1-3.4}]
+    \begin{lstlisting}[frame = single, label = {lst:lstlisting1-3.4}]
 var f, err = os.Open(name)
     \end{lstlisting}
     dove \verb"os.Open" restituisce un file e un errore.
