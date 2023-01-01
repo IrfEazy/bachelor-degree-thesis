@@ -1,0 +1,52 @@
+\begin{quotation}
+    \begin{small}
+        \textit{Go is an open-source programming language that makes it easy to build simple, reliable, and efficient software} (Dal sito web \verb|golang.org| di Go)
+    \end{small}
+\end{quotation}
+Go è un progetto ideato nel 2007 da Robert Griesemer, Rob Pike e Ken Thompson di Google, ed è stato annunciato nel novembre 2009.
+Go è open-source, quindi il codice sorgente del suo compilatore, le sue librerie e i suoi strumenti sono disponibili gratuitamente a chiunque.
+I suoi programmi possono essere eseguiti su sistemi discendenti da Unix e Microsoft Windows e, in generale, i programmi scritti in uno degli ambienti di sviluppo funzionano anche su altri ambienti senza modifiche precedenti.
+
+Il linguaggio Go e i suoi strumenti associati hanno l'obiettivo di essere espressivo, efficiente ed efficace.
+Per attirare i programmatori sul mercato, Go è stato implementato in un modo che assomiglia al linguaggio di programmazione C\@.
+Come linguaggio di programmazione, si adatta e prende in prestito buone idee da molti altri linguaggi, evitando i dettagli che porterebbero a un codice complesso e inaffidabile.
+Rispetto ad altri linguaggi di programmazione, la libreria di gestione della concorrenza dei processi è nuova ed efficiente e il suo approccio all'astrazione dei dati e alla programmazione orientata agli oggetti è insolitamente flessibile.
+Go è inoltre dotato di un \textit{garbage collector} per la gestione automatica della memoria da parte dei programmi, nonostante sia un linguaggio compilato.
+
+Go è particolarmente adatto per la creazione di sistemi informatici come server di rete e strumenti e sistemi di servizio per programmatori, ma è un linguaggio molto versatile anche per altri scopi, infatti viene utilizzato nei settori della grafica, delle applicazioni mobili e del machine learning.
+\section*{L'origine di Go}
+Go è talvolta descritto come un ``linguaggio C-like'', o come ``C del XXI secolo''.
+Da C, Go ha ereditato sintassi, flussi di controllo, tipi di dati di base, chiamate di valore nel passaggio dei parametri, puntatori e, soprattutto, enfasi C su programmi che compilano con codice macchina efficiente e cooperano naturalmente con le astrazioni del sistema operativo corrente.
+
+Tuttavia, ci sono altri antenati nell'albero genealogico Go.
+Un grande flusso di influenza proviene dalle lingue Wirth, a cominciare da Pascal.
+Modula-2 ha ispirato il concetto di pacchetto.
+Oberon ha eliminato la distinzione tra i file di interfaccia del modulo e i file di implementazione del modulo.
+Oberon-2 ha influenzato la sintassi per gli imballaggi, le importazioni e le dichiarazioni, in particolare le dichiarazioni di metodo.
+
+Un altro lignaggio tra gli antenati di Go, e uno che distingue Go tra i recenti linguaggi di programmazione, è una sequenza di piccoli linguaggi di ricerca sviluppati presso i Bell Labs, tutti ispirati dal concetto di \textit{Communicating Sequential Processes} (CSP) o processi di comunicazione sequenziale in italiano.
+In CSP, i programmi sono una composizione parallela di processi senza condivisione dello stato;
+i processi comunicano e sincronizzano utilizzando i canali.
+Tuttavia CSP era solo un linguaggio formale, e non un linguaggio di programmazione.
+
+La prima implementazione del CSP in un linguaggio di programmazione si chiamava Squeak, che offriva un linguaggio per la gestione di eventi mouse e tastiera creando canali in modo statico.
+Questo è stato seguito da Newsqueak, che ha offerto dichiarazioni C-like ed espressioni sintattiche e tipo di notazione Pascal-like.
+È stato puramente un linguaggio funzionale con garbage collector ancora una volta specializzata in tastiera, mouse, e la gestione delle finestre degli eventi.
+I canali sono stati creati dinamicamente e memorizzati in variabili.
+Ha seguito il linguaggio di programmazione Alef in cui è stato rimosso il garbage collector, rendendo la competizione dei linguaggi di programmazione molto più feroce.
+
+Go offre la possibilità di definire array dinamici con un accesso casuale efficiente, ma consente anche protocolli di condivisione sofisticati che ricordano le liste concatenate.
+
+\subsection*{Progetto Go}
+Tutti i linguaggi di programmazione riflettono la filosofia di programmazione dei loro creatori.
+Il progetto Go è nato dalla frustrazione di Google di avere numerosi sistemi software che hanno sofferto di un'esplosione di complessità.
+
+Il progetto Go comprendeva il proprio linguaggio, i propri strumenti standard e le biblioteche, e un'agenda culturale di radicale semplicità.
+Go ha un garbage collector, un sistema di pacchetti, funzioni di prim'ordine, ricchezza lessicale, un'interfaccia di chiamata di sistema e stringhe immutabili in cui il testo è generalmente codificato in UTF-8, ma ha relativamente poche caratteristiche.
+Ad esempio, non offre la conversione numerica implicita, costruttori o decostruttori, possibilità di sovraccarico dell'operatore, valori parametrici predefiniti, ereditarietà, generic, eccezioni, macro, annotazioni di funzione e Thread-Local Storage (TLS).
+Il linguaggio garantisce la retrocompatibilità: i vecchi programmi Go possono essere compilati ed eseguiti da nuove versioni di compilatori e librerie standard.
+
+Go incoraggia la conoscenza del design contemporaneo del sistema informatico, in particolare l'importanza della località.
+I suoi tipi di dati e la maggior parte delle librerie di strutture dati sono costruiti per funzionare naturalmente senza inizializzazione esplicita o un costruttore implicito, quindi l'allocazione di poca memoria e la scrittura della memoria stessa è nascosta nel codice.
+I tipi aggregati di Go (strutture e dati) mantengono i loro elementi direttamente, richiedendo meno memoria, meno allocazione e reindirizzamento rispetto ai linguaggi che utilizzano campi indiretti.
+E poiché i computer moderni sono macchine parallele, Go ha funzionalità di competizione basate su CSP\@.

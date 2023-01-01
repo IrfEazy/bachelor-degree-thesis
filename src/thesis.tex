@@ -1,40 +1,168 @@
-\documentclass[10pt]{article}
-\usepackage[left=1.1in,right=1.1in, top=1in, bottom= 1in]{geometry}
-\usepackage[italian]{babel}
-\usepackage{amsthm}
-\usepackage{textcomp}
-\usepackage{gensymb}
+%! TEX root
+\documentclass{Configuration_Files/UniBs_thesis}
+\usepackage{parskip} % For paragraph layout
+\usepackage{setspace} % For using single or double spacing
+\usepackage{emptypage} % To insert empty pages
+\usepackage{multicol} % To write in multiple columns (executive summary)
+\setlength\columnsep{15pt} % Column separation in executive summary
+\setlength\parindent{0pt} % Indentation
+\raggedbottom
+
+% PACKAGES FOR TITLES
+\usepackage{titlesec}
+\titlespacing{\section}{0pt}{3.3ex}{2ex}
+\titlespacing{\subsection}{0pt}{3.3ex}{1.65ex}
+\titlespacing{\subsubsection}{0pt}{3.3ex}{1ex}
+\usepackage{color}
+% PACKAGES FOR LANGUAGE AND FONT
+\usepackage[italian]{babel} % The document is in English
+\usepackage[utf8]{inputenc} % UTF8 encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage[11pt]{moresize} % Big fonts
+% PACKAGES FOR IMAGES
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage{transparent} % Enables transparent images
+\usepackage{eso-pic} % For the background picture on the title page
+\usepackage{subfig} % Numbered and caption subfigures using \subfloat.
+\usepackage{tikz} % A package for high-quality hand-made figures.
+\usetikzlibrary{}
+\graphicspath{{./Images/}} % Directory of the images
+\usepackage{amsthm, thmtools, xcolor} % Coloured "Theorem"
+\usepackage{float}
+% STANDARD MATH PACKAGES
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage[overload]{empheq} % For braced-style systems of equations.
+\usepackage{fix-cm} % To override original LaTeX restrictions on sizes
+% PACKAGES FOR TABLES
+\usepackage{tabularx}
+\usepackage{longtable} % Tables that can span several pages
+\usepackage{colortbl}
+% PACKAGES FOR ALGORITHMS (PSEUDO-CODE)
+\usepackage{algorithm}
+\usepackage{algorithmic}
+% PACKAGES FOR REFERENCES & BIBLIOGRAPHY
+\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
+\usepackage{cleveref}
+\usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
+\bibliographystyle{abbrvnat} % You may use a different style adapted to your field
+
+% OTHER PACKAGES
+\usepackage{pdfpages} % To include a pdf file
+\usepackage{afterpage}
+\usepackage{lipsum} % DUMMY PACKAGE
+\usepackage{fancyhdr}
 \usepackage{listings}
-\usepackage{pdfpages}
-\usepackage{ragged2e}
-\usepackage{subfiles}
-% ----------------------------------------------- %
+\usepackage{wasysym}
+\usepackage{mathtools}
+\usepackage{stmaryrd}
+\usepackage{subfiles} % For the headers
+\usepackage{textcomp}
+\fancyhf{}
+
+% Input of configuration file. Do not change config.tex file unless you really know what you are doing.
+\input{Configuration_Files/config}
+
+%----------------------------------------------------------------------------
 \newcommand{\dollar}{\mbox{\textdollar}}
-\lstset{literate ={°}{$\degree$}1}
-\lstset{language = Go}
-\lstset{showstringspaces = false}
-\lstset{escapeinside = {\%*}{*)}}
-\lstset{captionpos = b}
-% ---------------------------------------------- %
+\lstset{escapeinside={\%*}{*\)}, captionpos=b, showstringspaces=false, language=Go}
+%----------------------------------------------------------------------------
+
 \begin{document}
-    \pagenumbering{Alph}
-    \includepdfmerge{front}
-    \pagenumbering{arabic}
-    \tableofcontents
-    \subfile{chapters/0-introduzione.tex}
-    \subfile{chapters/1-struttura-del-programma.tex}
-    \subfile{chapters/2-tipi-dati-base.tex}
-    \subfile{chapters/3-tipi-compositi.tex}
-    \subfile{chapters/4-funzioni.tex}
-    \subfile{chapters/5-metodi.tex}
-    \subfile{chapters/6-interfacce.tex}
-    \subfile{chapters/7-goroutines-e-channel.tex}
-    \subfile{chapters/9-concorrenza-con-variabili-condivise.tex}
-    \subfile{chapters/10-conclusioni.tex}
+    \fancypagestyle{plain}{
+        \fancyhf{} % Clear all header and footer fields
+        \fancyhead[RO,RE]{\thepage} %RO=right odd, RE=right even
+        \renewcommand{\headrulewidth}{0pt}
+        \renewcommand{\footrulewidth}{0pt}
+    }
+    \pagestyle{empty} % No page numbers
+    \frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
+
+%----------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------
+
+    \puttitle{
+        title=STUDIO E SPERIMENTAZIONE DEL LINGUAGGIO DI PROGRAMMAZIONE GO,
+        name=Irfan Cela, % Author Name and Surname
+        academicyear=2020/2021
+    } % These info will be put into your Title page
+    %\pagenumbering{Alph}
+    %\includepdfmerge{front}
+
+%----------------------------------------------------------------------------
+%	PREAMBLE PAGES: ABSTRACT (inglese e italiano), EXECUTIVE SUMMARY
+%----------------------------------------------------------------------------
+    \startpreamble
+    \setcounter{page}{1} % Set page counter to 1
+    %\pagenumbering{arabic}
+
+%----------------------------------------------------------------------------
+%	LIST OF CONTENTS/FIGURES/TABLES/SYMBOLS
+%----------------------------------------------------------------------------
+
+% TABLE OF CONTENTS
+    \thispagestyle{empty}
+    \tableofcontents % Table of contents
+    \thispagestyle{empty}
+    \cleardoublepage
+    %\tableofcontents
+
+    \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+    \mainmatter % Begin numeric (1,2,3...) page numbering
+
+    \chapter*{Introduzione}
+    \label{ch:introduzione}%
+    \input{chapters/0_introduzione}
+
+
+    \chapter{Struttura del programma}
+    \label{ch:struttura_del_programma}%
+    \input{chapters/1_struttura_del_programma}
+
+
+    \chapter{Tipi di dati di base}
+    \label{ch:tipi_di_dati_di_base}%
+    \input{chapters/2_tipi_dati_base}
+
+
+    \chapter{Tipi compositi}
+    \label{ch:tipi_compositi}%
+    \input{chapters/3_tipi_compositi}
+
+
+    \chapter{Funzioni}
+    \label{ch:funzioni}%
+    \input{chapters/4_funzioni}
+
+
+    \chapter{Metodi}
+    \label{ch:metodi}%
+    \input{chapters/5_metodi}
+
+
+    \chapter{Interfacce}
+    \label{ch:interfacce}%
+    \input{chapters/6_interfacce}
+
+
+    \chapter{Goroutine e channel}
+    \label{ch:goroutine_e_channel}%
+    \input{chapters/7_goroutines_e_channel}
+
+
+    \chapter{Concorrenza con variabili condivise}
+    \label{ch:concorrenza_con_variabili_condivise}%
+    \input{chapters/8_concorrenza_con_variabili_condivise}
+
+
+    \chapter{Conclusioni}
+    \label{ch:conclusioni}%
+    \input{chapters/9_conclusioni}
     \begin{thebibliography}{100}
-        \bibitem{the-go-programming-language} \textbf{The Go Programming Language} Alan A. A. Donovan · Brian W. Kernighan, Published Oct 26, 2015 in paperback and Nov 20 in e-book, Addison-Wesley;
+        \bibitem{the_go_programming_language} \textbf{The Go Programming Language} Alan A. A. Donovan · Brian W. Kernighan, Published Oct 26, 2015 in paperback and Nov 20 in e-book, Addison-Wesley;
         380pp;
         ISBN: 978--0134190440, authors@gopl.io
     \end{thebibliography}

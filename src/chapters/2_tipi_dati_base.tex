@@ -1,0 +1,218 @@
+I tipi di Go rientrano in quattro categorie: \textit{tipi base}, \textit{tipi aggregati}, \textit{tipi di riferimento} e \textit{tipi di interfaccia}.
+I tipi di base includono numeri, stringhe e booleani.
+I tipi aggregati formano tipi di dati più complicati combinando valori di diversi tipi semplici.
+I tipi di riferimento sono un gruppo diverso che include puntatori, slice, map, funzioni e channel, ma ciò che hanno in comune è che tutti si riferiscono a variabili di programma o di stato \textit{indirettamente}, in modo che l'effetto di un'operazione applicata a un riferimento sia osservato da tutte le copie di tale riferimento.
+
+
+\section{Numeri interi}
+\label{sec:numeri_interi}%
+Go fornisce sia l'aritmetica intera con segno che senza segno.
+Ci sono quattro dimensioni distinte di interi con segno - \verb|8|, \verb|16|, \verb|32| e \verb|64| - rappresentati dai tipi \verb|int8|, \verb|int16|, \verb|int32| e \verb|int64|, e corrispondenti versioni senza segno \verb|uint8|, \verb|uint16|, \verb|uint32| e \verb|uint64|.
+
+Ci sono anche due tipi, chiamati solo \verb|int| e \verb|uint|, che sono la dimensione naturale o più efficiente per interi con segno e senza segno su una particolare piattaforma.
+Entrambi i tipi hanno le stesse dimensioni, ma non si devono fare ipotesi su quali;
+diversi compilatori possono fare scelte diverse anche su hardware identico.
+
+Il tipo \verb|rune| è un sinonimo di \verb|int32| e convenzionalmente indica che un valore è un punto di codice Unicode.
+I due nomi possono essere usati in modo intercambiabile.
+Allo stesso modo, il tipo \verb|byte| è un sinonimo di \verb|uint8|.
+
+Infine, c'è un tipo di numero intero senza segno \verb|uintptr| la cui larghezza non è specificata ma è sufficiente per contenere tutti i bit di un valore puntatore.
+Il tipo \verb|uintptr| viene utilizzato solo per la programmazione di basso livello, ad esempio a bordo di un programma Go con una libreria C o un sistema operativo.
+
+Gli operatori binari di Go per l'aritmetica, la logica e il confronto sono elencati qui in ordine decrescente di precedenza:
+\begin{table}
+    \centering
+    \begin{tabular}{ l l l l l l l l }
+        & \verb|*|  & \verb|/|  & \verb|%| & \verb|<<| & \verb|>>| & \&        & \&\verb|^| \\
+        & \verb|+|  & \verb|-|  & \verb||| & \verb|^|  &           &           &            \\
+        & \verb|==| & \verb|!=| & \verb|<| & \verb|<=| & \verb|>|  & \verb|>=| &            \\
+        & \&\&      &           &          &           &           &           &            \\
+        & \verb!||! &           &          &           &           &           &            \\
+    \end{tabular}
+    \label{tab:table21}
+\end{table}
+Ci sono solo cinque livelli di precedenza per gli operatori binari.
+Gli operatori dello stesso livello si associano a sinistra, quindi possono essere richieste parentesi per chiarezza.
+
+Gli operatori aritmetici \verb|+|, \verb|-|, \verb|*| e \verb|/| possono essere applicati ai numeri interi, in virgola mobile e complessi, ma l'operatore resto \verb|%| si applica solo agli interi.
+In Go, il segno del resto è sempre lo stesso del segno del dividendo, quindi \verb|-5%3| e \verb|-5%-3| sono entrambi \verb|-2|.
+Il comportamento di \verb|/| dipende dal fatto che i suoi operandi siano interi, quindi \verb|5.0/4.0| è \verb|1.25|, ma \verb|5/4| è \verb|1| perché la divisione intera tronca il risultato verso zero.
+
+
+\section{Stringhe}
+\label{sec:stringhe}%
+Una stringa è una sequenza immutabile di byte.
+Le stringhe possono contenere dati arbitrari, inclusi byte con valore \verb|0|, ma di solito contengono testo leggibile dall'uomo.
+Le stringhe di testo sono convenzionalmente interpretate come sequenze codificate UTF-8 di punti di codice Unicode (rune).
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2.1}]
+s := %*``*\)hello, world%*''*\)
+fmt.Println(len(s))
+fmt.Println(s[0], s[7])
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting2.2}]
+12
+104 119 (`h' and `w')
+\end{lstlisting}
+Il tentativo di accedere a un byte al di fuori di questo intervallo si traduce in un \verb|panic|:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2.3}]
+C := s[len(s)] // panic: indice fuori dal range
+\end{lstlisting}
+L'operazione di \textit{sottostringa} \verb|s[i:j]| produce una nuova stringa composta dai byte della stringa originale che inizia dall'indice \verb|i| e continua fino, ma non include, il byte all'indice \verb|j|.
+Il risultato contiene \verb|j-i| byte.
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2.4}]
+fmt.Println(s[0:5])
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting2-2.5}]
+hello
+\end{lstlisting}
+Uno o entrambi gli operandi \verb|i| e \verb|j| possono essere omessi, nel qual caso i valori predefiniti di \verb|0| (l'inizio della stringa) e \verb|len(s)| (la sua fine) sono assunti, rispettivamente.
+
+L'operatore \verb|+| crea una nuova stringa concatenando due stringhe.
+Le stringhe possono essere confrontate con operatori di confronto come \verb|==| e \verb|<|;
+il confronto viene fatto byte per byte, quindi il risultato è l'ordinamento lessicografico naturale.
+
+I valori di stringa sono immutabili: la sequenza di byte contenuta in un valore di stringa non può mai essere modificata, anche se ovviamente possiamo assegnare un nuovo valore a una \textit{variabile} di stringa.
+
+Immutabilità significa che è sicuro per due copie di una stringa condividere la stessa memoria sottostante, il che rende conveniente copiare le stringhe di qualsiasi lunghezza.
+Allo stesso modo, una stringa \verb|s| e una sottostringa \verb|s[7:]| possono tranquillamente condividere gli stessi dati, quindi anche l'operazione di sottostringa è economica.
+Nessuna nuova memoria viene allocata in entrambi i casi.
+
+\subsection{Stringhe costanti}
+\label{subsec:stringhe_costanti}%
+Poiché i file sorgente Go sono sempre codificati in UTF-8 e le stringhe di testo Go sono convenzionalmente interpretate come UTF-8, possiamo includere punti di codice Unicode fra i caratteri di stringa.
+
+
+All'interno delle virgolette di una stringa letterale, le \textit{sequenze di escape} che iniziano con una barra rovesciata \verb|\| possono essere utilizzate per inserire valori di byte arbitrari nella stringa.
+
+I byte arbitrari possono anche essere inclusi in stringhe letterali usando escape esadecimali o ottali.
+Un \textit{escape esadecimale} è scritta \verb|\x|\textit{hh}, con esattamente due cifre esadecimali \textit{h} (in maiuscolo o minuscolo).
+Un \textit{escape ottale} è scritta \verb|\x|\textit{ooo} con esattamente tre cifre ottali \textit{o} (da \verb|0| a \verb|7|) non superiori a \verb|\377|.
+Entrambi denotano un singolo byte con il valore specificato.
+
+\subsection{Unicode}
+\label{subsec:unicode}%
+Unicode (\verb|unicode.org|) raccoglie tutti i caratteri di tutti i sistemi di scrittura del mondo, oltre a accenti e altri segni diacritici, codici di controllo come tabulazione e ritorno a capo, e un sacco di esoterica, e assegna a ciascuno un numero standard chiamato \textit{punto di codice Unicode} o, nella terminologia Go, una \textit{runa}.
+
+Il tipo di dati naturale per contenere una singola runa è \verb|int32|.
+Potremmo rappresentare una sequenza di rune come una sequenza di valori \verb|int32|.
+In questa rappresentazione, chiamata UTF-32 o UCS-4, la codifica di ogni punto di codice Unicode ha la stessa dimensione, 32 bit.
+Questo è semplice e uniforme, ma utilizza molto più spazio del necessario poiché la maggior parte del testo leggibile dal computer è in ASCII, che richiede solo 8 bit (quindi 1 byte) per carattere.
+
+\subsection{UTF-8}
+\label{subsec:utf8}%
+UTF-8 è una codifica a lunghezza variabile dei punti di codice Unicode (unità di byte).
+UTF-8 è stato inventato da Ken Thompson e Rob Pike, due dei creatori di Go, ed è ora uno standard Unicode.
+Usa tra 1 e 4 byte per rappresentare ogni runa, ma solo 1 byte per i caratteri ASCII\@.
+I bit di ordine elevato del primo byte della codifica di una runa indicano quanti byte seguono.
+Un \verb|0| di alto ordine indica un ASCII a 7 bit, dove ogni runa prende solo 1 byte, quindi è identico all'ASCII convenzionale.
+Un ordine alto \verb|110| indica che la runa prende 2 byte;
+il secondo byte inizia con \verb|10|.
+Le rune più grandi hanno codifiche analoghe.
+
+Una codifica a lunghezza variabile preclude l'indicizzazione diretta per accedere al carattere \textit{n}-esimo di una stringa, ma UTF-8 ha molte altre proprietà apprezzabili a compensare tale difetto.
+La codifica è compatta, compatibile con ASCII e auto-sincronizzante: è possibile trovare l'inizio di un carattere eseguendo il backup di non più di tre byte.
+Può essere decodificato da sinistra a destra senza alcuna ambiguità o necessità di un lookahead.
+La codifica di nessuna runa è una sottostringa di qualsiasi altra, o di una sequenza di altre, quindi una runa è individuabile semplicemente cercando i suoi byte, senza preoccuparsi del contesto precedente.
+
+Il pacchetto \verb|unicode| fornisce funzioni per lavorare con singole rune (come distinguere le lettere dai numeri, o convertire una lettera maiuscola in una minuscola), e il pacchetto \verb|unicode/utf8| fornisce funzioni per codificare e decodificare le rune come byte usando UTF-8.
+
+Molti caratteri Unicode sono difficili da digitare su una tastiera o da distinguere visivamente da caratteri simili;
+alcuni sono addirittura invisibili, gli escape Unicode in Go ci permettono di specificarli in base al loro valore numerico.
+Ci sono due forme, \verb|\u|\textit{hhhhhh} per un valore a 16 bit e \verb|\U|\textit{hhhhhhhh} per un valore a 32 bit, dove ogni \textit{h} è una cifra esadecimale.
+
+\subsection{Stringhe e byte slices}
+\label{subsec:stringhe_e_byte_slices}%
+I pacchetti standard particolarmente importanti per manipolare le stringhe sono quattro: \verb|bytes|, \verb|strings|, \verb|strconv| e \verb|unicode|.
+Il pacchetto \verb|strings| fornisce molte funzioni per la ricerca, la sostituzione, il confronto, il taglio, la divisione e l'unione delle stringhe.
+
+Il pacchetto \verb|bytes| ha funzioni simili per manipolare porzioni di byte, di tipo \verb|[]byte|, che condividono alcune proprietà con le stringhe.
+Poiché le stringhe sono immutabili, la creazione di stringhe in modo incrementale può comportare un sacco di allocazione e copie.
+In questi casi, è più efficiente usare il tipo \verb|bytes.Buffer|.
+
+Una stringa contiene un array di byte che, una volta creata, è immutabile.
+Al contrario, gli elementi di una slice di byte possono essere liberamente modificati.
+Le stringhe possono essere convertite in byte slice e viceversa:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-2-4.1}]
+s := %*``*\)abc%*''*\)
+b := []byte(s)
+s2 := string(b)
+\end{lstlisting}
+Concettualmente, la conversione \verb|[]byte(s)| alloca un nuovo array di byte che contiene una copia dei byte di \verb|s|, e produce una slice che fa riferimento alla totalità di quell'array.
+In generale la copia è necessaria per garantire che i byte di \verb|s| rimangano invariati nel caso quelli di \verb|b| vengano successivamente modificati.
+La conversione da byte slice a string con \verb|string(b)| fa anch'esso una copia, per assicurare l'immutabilità della stringa risultante \verb|s2|.
+
+Per evitare conversioni e allocazioni di memoria non necessarie, molte delle funzioni di utilità nel pacchetto \verb|bytes| parallelizzano direttamente le loro controparti nel pacchetto \verb|strings|.
+
+Il pacchetto \verb|bytes| fornisce il tipo \verb|Buffer| per una manipolazione efficiente delle slice byte.
+Un \verb|Buffer| inizia vuoto, ma cresce accumulando dati di tipi quali \verb|string|, \verb|byte| e \verb|[]byte|.
+
+
+\section{Costanti}
+\label{sec:costanti}%
+Le costanti sono espressioni il cui valore è noto al compilatore e la cui valutazione è garantita che si verifichi al momento della compilazione, non al tempo di esecuzione.
+Il tipo sottostante di ogni costante è un tipo di base: booleano, stringa o numero.
+
+Una dichiarazione \verb|const| definisce valori denominati che sembrano sintatticamente variabili ma il cui valore è costante, il che impedisce cambiamenti accidentali (o nefasti) durante l'esecuzione del programma.
+Per esempio, una costante è più appropriata di una variabile per una costante matematica come \verb|pi|, poiché il suo valore non cambierà:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3.1}]
+const pi = 3.14159 // approssimato; math.Pi %*\textit{è}*\) migliore
+\end{lstlisting}
+Quando una sequenza di costanti è dichiarata come un gruppo, l'espressione a destra può essere omessa per tutti tranne che per il primo del gruppo, il che implica che l'espressione precedente e il suo tipo debbano essere nuovamente usati.
+Ad esempio:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3.2}]
+const (
+    a = 1
+    b
+    c = 2
+    d
+)
+
+fmt.Println(a, b, c, d)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting2-3.3}]
+1 1 2 2
+\end{lstlisting}
+Tuttavia, questo non è molto utile nel caso la copia implicita dell'espressione del lato destro valuti sempre la stessa cosa, ma se potesse variare?
+Otteniamo \verb|iota|.
+
+\subsection{Il generatore costante iota}
+\label{subsec:il_generatore_costante_iota}%
+Una dichiarazione \verb|const| può usare il \textit{generatore costante} \verb|iota|, che viene usato per creare una sequenza di valori correlati senza specificare esplicitamente ciascuno di essi.
+In una dichiarazione \verb|const|, il valore di \verb|iota| inizia a zero e aumenta di uno per ogni elemento della sequenza.
+
+Tipi di questo tipo sono spesso chiamati \textit{enumerazioni}, o \textit{enum} in breve.
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3-1.1}]
+type Weekday int
+
+const (
+    Sunday Weekday = iota
+    Monday
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+)
+\end{lstlisting}
+Questo dichiara \verb|Sunday| essere 0, \verb|Monday| essere 1, e così via.
+
+Possiamo usare \verb|iota| anche in espressioni più complesse, per esempio possiamo assegnare ai 5 bit più bassi di un intero senza segno un nome distinto e un'interpretazione booleana:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3-1.2}]
+type Flags uint
+
+const (
+    FlagUp Flags = 1 << iota // %*\textit{è}*\) up
+    FlagBroadcast            // supporta la capacit%*\textit{à}*\) di accesso
+                             // broadcast
+    FlagLoopback             // %*\textit{è}*\) un'interfaccia di loopback
+    FlagPointToPoint         // appartiene a un collegamento
+                             // punto a punto
+    FlagMulticast            // supporta la capacit%*\textit{à}*\) di accesso
+                             // multicast
+)
+\end{lstlisting}
+Così come incrementa \verb|iota|, ad ogni costante viene assegnato il valore di \verb|1 << iota|, che valuta le potenze di due, ciascuno corrispondente ad un singolo bit.

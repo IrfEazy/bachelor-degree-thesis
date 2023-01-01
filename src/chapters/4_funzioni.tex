@@ -1,0 +1,380 @@
+Una funzione ci permette di avvolgere una sequenza di istruzioni come un'unità che può essere chiamata da altrove in un programma, anche più volte.
+Le funzioni permettono di suddividere un grande lavoro in parti più piccole.
+Una funzione nasconde i dettagli della sua implementazione ai suoi utenti.
+Per tutti questi motivi, le funzioni sono una parte critica di tutto il linguaggio di programmazione.
+
+
+\section{Dichiarazione di funzione}
+\label{sec:dichiarazione_di_funzione}%
+Una dichiarazione di funzione ha un nome, un elenco di parametri, un elenco opzionale di risultati e un corpo:
+\begin{lstlisting}[label={lst:lstlisting4-1.1}]
+func nome(elenco-parametri) (elenco-risultati) {
+   corpo
+}
+\end{lstlisting}
+L'elenco dei parametri specifica i nomi e i tipi dei \textit{parametri} della funzione, che sono la variabile locale i cui valori o \textit{argomenti} sono forniti dal chiamante.
+L'elenco dei risultati specifica i tipi di valori restituiti dalla funzione.
+Se la funzione restituisce un risultato senza nome o nessun risultato, le parentesi sono facoltative e di solito omesse.
+Omettere la lista dei risultati vuol dire che la funzione non restituisce alcun valore ed è chiamata solo per i suoi effetti.
+
+Una sequenza di parametri o risultati dello stesso tipo può essere scomposta in modo che il tipo stesso sia scritto solo una volta.
+
+In seguito vengono presentati quattro modi per dichiarare una funzione con due parametri e un risultato, tutti di tipo \verb|int|.
+L'identificatore vuoto può essere utilizzato per sottolineare che un parametro non è utilizzato.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-1.2}]
+func add(x int, y int) { return x + y }
+func sub(x, y int) (z int) { z = x - y; return }
+func first(x int, _ int) int { return x }
+func zero(int, int) int { return 0 }
+
+fmt.Printf(%*``*\)%T\n%*''*\), add)
+fmt.Printf(%*``*\)%T\n%*''*\), sub)
+fmt.Printf(%*``*\)%T\n%*''*\), first)
+fmt.Printf(%*``*\)%T\n%*''*\), zero)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-1.3}]
+func(int, int) int
+func(int, int) int
+func(int, int) int
+func(int, int) int
+\end{lstlisting}
+Il tipo di una funzione è talvolta detta la sua \textit{firma}.
+Due funzioni hanno lo stesso tipo o firma se hanno la stessa sequenza di tipi di parametri e la stessa sequenza di tipi di risultato.
+I nomi dei parametri e dei risultati non influenzano il tipo, né il fatto che siano stati dichiarati o meno utilizzando la forma fattorizzata.
+
+Gli argomenti vengono passati \textit{per valore}, quindi la funzione riceve una copia di ogni argomento;
+le modifiche alla copia non influenzano il chiamante.
+Tuttavia, se l'argomento contiene un qualche tipo di riferimento, come un puntatore, una slice, una map, una funzione o un channel, allora il chiamante può essere influenzato da qualsiasi modifica che la funzione apporta \textit{indirettamente} alle variabili cui fa riferimento l'argomento.
+
+Si può occasionalmente incontrare una dichiarazione di funzione senza un corpo, indicando che la funzione è implementata in un linguaggio diverso da Go.
+Tale dichiarazione definisce la firma della funzione.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-1.4}]
+package math
+
+func Sin(x float64) float64 // implementato in linguaggio
+                            // assembly p.e.
+\end{lstlisting}
+
+
+\section{Valori di ritorno multipli}
+\label{sec:valori_di_ritorno_multipli}%
+Una funzione può restituire più di un risultato.
+Il risultato della chiamata di una funzione multi-valore è una tupla di valori.
+Il chiamante della funzione deve esplicitare l'assegnazione dei valori alle variabili nel caso una di esse verrà in seguito usata.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.1}]
+links, err := findLinks(url)
+\end{lstlisting}
+Per ignorare uno dei valori, assegnare uno di essi agli identificatori blank:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.2}]
+links, _ := findLinks(url) // gli errori sono ignorati
+\end{lstlisting}
+Il risultato di una chiamata multi-valore può essere a sua volta restituito da una funzione di chiamata (multi-valori), come in questa funzione:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.3}]
+func findLiksLog(url string) ([]string, error) {
+    log.Printf(%*``*\)findLinks %s%*''*\), url)
+    return findLinks(url)
+}
+\end{lstlisting}
+Una chiamata multi-valore può apparire come unico argomento quando si chiama una funzione con più parametri.
+Anche se raramente usato nel codice di produzione, questa caratteristica è a volte conveniente durante il debug in quanto ci permette di stampare tutti i risultati di una chiamata utilizzando una singola istruzione.
+Le due istruzioni di stampa qui sotto hanno lo stesso effetto.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.4}]
+log.Println(findLinks(url))
+
+links, err := findLinks(url)
+log.Println(links, err)
+\end{lstlisting}
+In una funzione con risultati denominati, gli operandi di un'istruzione return possono essere omessi.
+Questo è chiamato a \textit{bare return}.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.5}]
+func CountWordsAndImages(url string) (words, images int,
+                                                err error) {
+    resp, err := http.Get(url)
+    if err != nil {
+        return
+    }
+    doc, err := html.Parse(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        err = fmt.Errorf(%*``*\)parsing HTML: %s%*''*\), err)
+        return
+    }
+    words, images = countWordAndImages(doc)
+    return
+}
+
+func countWordsAndImages(n *html.Node) (words, images int) {
+    /* ... */
+}
+\end{lstlisting}
+Un brave return è un modo abbreviato per restituire ciascuna delle variabili di risultato nominate in ordine, quindi nella funzione sopra, ogni dichiarazione di ritorno è equivalente a:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.6}]
+return word, images, err
+\end{lstlisting}
+In funzioni come questa, con molte istruzioni di ritorno e diversi risultati, i bare return possono ridurre la duplicazione del codice, ma raramente rendono il codice più facile da capire.
+
+
+\section{Errori}
+\label{sec:errori}%
+L'approccio di Go lo distingue da molti altri linguaggi in cui i fallimenti sono segnalati usando \textit{eccezioni}, non valori ordinari.
+Anche se Go ha un meccanismo di eccezione di sorta, è usato solo per segnalare errori veramente inaspettati che indicano un bug, non gli errori di routine che un programma robusto dovrebbe aspettarsi.
+
+Una funzione per la quale il fallimento è un comportamento atteso restituisce un risultato aggiuntivo, convenzionalmente l'ultimo.
+Se il fallimento ha una sola possibile causa, il risultato è un booleano, di solito chiamato \verb|ok|.
+Più spesso il fallimento può avere una varietà di cause per le quali il chiamante avrà bisogno di una spiegazione.
+In tali casi, il tipo di risultato aggiuntivo è \verb|error| (un tipo di interfaccia).
+
+La ragione di questo progetto è che le eccezioni tendono ad impigliare la descrizione di un errore con il flusso di controllo richiesto per gestirlo, spesso portando ad un risultato indesiderato: gli errori di routine vengono segnalati all'utente finale sotto forma di una traccia di stack incomprensibile, pieno di informazioni sulla struttura del programma, ma privo di contesto intelligibile su ciò che è andato storto.
+
+Al contrario, i programmi Go usano meccanismi di controllo di flusso ordinari come \verb|if| e \verb|return| per rispondere agli errori.
+Questo stile richiede innegabilmente una maggiore attenzione alla logica di gestione degli errori.
+
+
+\section{Valori di funzione}
+\label{sec:valori_di_funzione}%
+Le funzioni sono \textit{valori di prima classe} in Go: come altri valori, i valori di funzione hanno tipi, e possono essere assegnati a variabili o passati a o restituiti da funzioni.
+Un valore di funzione può essere chiamato come qualsiasi altra funzione.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-5.1}]
+func square(n int) int { return n * n }
+func negative(n int) int { return -n }
+func product(m, n int) int { return m * n }
+
+f := square
+fmt.Println(f(3))
+
+f = negative
+fmt.Println(f(3))
+fmt.Printf(%*``*\)%T\n%*''*\), f)
+
+f = product // compile error: non pu%*\textit{ò}*\) assegnare
+            // func(int, int) int a func(int) int
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-5.2}]
+9
+-3
+func(int) int
+\end{lstlisting}
+Il valore zero di un tipo di funzione è \verb|nil|.
+Chiamare un valore di funzione \verb|nil| provoca il panic:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-5.3}]
+var f func(int) int
+f(3) // panic: chiamata ad una funzione nil
+\end{lstlisting}
+I valori di funzione possono essere confrontati con ``nil'':
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-5.4}]
+var f func(int) int
+if f != nil {
+    f(3)
+}
+\end{lstlisting}
+ma non sono paragonabili, quindi non sono confrontati tra loro o utilizzati come chiavi in una mappa.
+
+I valori delle funzioni ci permettono di parametrizzare le nostre funzioni non solo sui dati, ma anche sul comportamento.
+Le librerie standard contengono molti esempi.
+Per esempio, \verb|strings.Map| applica una funzione ad ogni carattere di una stringa, unendo i risultati per creare un'altra stringa.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-5.5}]
+func add1(r rune) rune { return r + 1 }
+
+fmt.Println(strings.Map(add1, %*``*\)HAL-9000%*''*\)))
+fmt.Println(strings.Map(add1, %*``*\)VMS%*''*\)))
+fmt.Println(strings.Map(add1, %*``*\)Admix%*''*\)))
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-5.6}]
+IBM.:111
+WNT
+Benjy
+\end{lstlisting}
+
+
+\section{Funzioni anonime}
+\label{sec:funzioni_anonime}%
+Le funzioni con nome possono essere dichiarate solo a livello di pacchetto, ma possiamo usare una \textit{function literal} per denotare un valore di funzione all'interno di qualsiasi espressione.
+Una funzione literal è scritta come una dichiarazione di funzione, ma senza un nome che segue la parola chiave \verb|func|.
+È un'espressione, e il suo valore è detto \textit{funzione anonima}.
+
+I function literal permettono di definire una funzione nel loro punto d'uso:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-6.1}]
+strings.Map(func(r rune) rune { return r + 1 }, %*``*\)HAL-9000%*''*\))
+\end{lstlisting}
+Ancora più importante, le funzioni definite in questo modo hanno accesso all'intero ambiente lessicale, quindi la funzione interna può riferirsi alle variabili dalla funzione che la racchiude:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-6.2}]
+func squares() func() int {
+    var x int
+    return func() int {
+        x++
+        return x * x
+    }
+}
+\end{lstlisting}
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-6.3}]
+func main() {
+    f := squares()
+    fmt.Println(f())
+    fmt.Println(f())
+    fmt.Println(f())
+    fmt.Println(f())
+}
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-6.4}]
+1
+4
+9
+16
+\end{lstlisting}
+La funzione \verb|squares| restituisce un'altra funzione, di tipo \verb|func() int|.
+La prima chiamata a \verb|squares| crea una variabile locale \verb|x| e restituisce una funzione anonima che, ogni volta che viene chiamata, incrementa \verb|x| e ne restituisce il suo quadrato.
+Una seconda chiamata a \verb|squares| crea una seconda variabile \verb|x| e restituisce una nuova funzione anonima che incrementa quella variabile.
+
+L'esempio \verb|squares| dimostra che i valori di funzione non sono solo codice ma possono avere stato.
+La funzione interna anonima può accedere e aggiornare le variabili locali della funzione \verb|squares| che la racchiude.
+Questi riferimenti di variabili nascoste sono il motivo per cui le funzioni si classificano come tipi di riferimento e il perché i valori di funzione non sono comparabili.
+I valori di funzione come questi sono effettuati facendo uso di una tecnica detta \textit{closure} ed i programmatori di Go usano spesso questo termine per i valori di funzione.
+
+Quando una funzione anonima richiede la ricorsione, bisogna prima dichiarare una variabile e quindi assegnare la funzione anonima a quella variabile.
+Se i due passi sono combinati nella dichiarazione (con un'istruzione \verb|:=|), la function literal non rientrerebbe nell'ambito della variabile, quindi non avrebbe modo di chiamarsi ricorsivamente.
+
+
+\section{Funzioni variadic}
+\label{sec:funzioni_variadic}%
+Una \textit{funzione variadic} può essere chiamata con un numero variabile di argomenti.
+Gli esempi più familiari sono \verb|fmt.Printf| e le sue varianti.
+\verb|Printf| richiede un argomento fisso all'inizio, quindi accetta qualsiasi numero di argomenti successivi.
+
+Per dichiarare una funzione variadic, il tipo del parametro finale è preceduto da un ellissi, ``\verb|...|'', che indica che la funzione può essere chiamata con qualsiasi numero di argomenti di questo tipo.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-7.1}]
+func sum(vals ...int) int {
+   total := 0
+   for _, val := range vals {
+      total += val
+   }
+   return total
+}
+\end{lstlisting}
+La funzione \verb|sum| restituisce la somma di zero o più argomenti \verb|int|.
+All'interno del corpo della funzione, il tipo di \verb|vals| è una slice \verb|[]int|.
+Quando si invoca \verb|sum|, qualunque numero di valori può essere fornito come parametro \verb|vals|.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-7.2}]
+fmt.Println(sum())
+fmt.Println(sum(3))
+fmt.Println(sum(1, 2, 3, 4))
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-7.3}]
+0
+3
+10
+\end{lstlisting}
+Implicitamente, il chiamante alloca un array, copia gli argomenti in esso, e passa una slice dell'intero array alla funzione.
+L'ultima chiamata dell'ultimo esempio si comporta come la chiamata del seguente esempio, in cui si mostra come invocare una funzione variadic quando gli argomenti sono già in una slice: si deve posizionare un ellissi dopo l'argomento finale.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-7.4}]
+values := []int{1, 2, 3, 4}
+fmt.Println(sum(values...))
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-7.5}]
+10
+\end{lstlisting}
+Sebbene il parametro \verb|...int| si comporti come una slice all'interno del corpo della funzione, il tipo di una funzione variadic è distinto dal tipo di una funzione con un parametro slice ordinario.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-7.6}]
+func f(...int) {}
+func g([]int) {}
+
+fmt.Printf(%*``*\)%T\n%*''*\), f)
+fmt.Printf(%*``*\)%T\n%*''*\), g)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-7.7}]
+func(...int)
+func([]int)
+\end{lstlisting}
+
+
+\section{Chiamate con funzione differita}
+\label{sec:chiamate_con_funzione_differita}%
+Sintatticamente, un'istruzione \verb|defer| è una funzione ordinaria o una chiamata di metodo preceduta dalla parola chiave \verb|defer|.
+Le espressioni di funzione e argomento vengono valutate quando l'istruzione viene eseguita, ma la chiamata effettiva viene \textit{differita} fino a quando la funzione che contiene l'istruzione \verb|defer| non è terminata, sia che si tratti normalmente di eseguire un'istruzione return, o anormalmente, dal panic.
+Qualsiasi numero di chiamate può essere differito;
+vengono eseguite al contrario dell'ordine in cui sono state differite.
+
+Una dichiarazione di \verb|defer| viene spesso utilizzata con operazioni associate come aprire e chiudere, connettersi e disconnettersi o bloccare e sbloccare per garantire che le risorse vengano rilasciate in tutti i casi, indipendentemente dalla complessità del flusso di controllo.
+Il posto giusto per un'istruzione \verb|defer| che rilascia una risorsa è immediatamente dopo che la risorsa è stata acquisita con successo.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-8.1}]
+package ioutil
+
+func ReadFile(filename string) ([]byte, error) {
+    f, err := os.Open(filename)
+    if err != nil {
+        return nil, err
+    }
+    defer f.Close()
+    return ReadAll(f)
+}
+\end{lstlisting}
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-8.2}]
+var mu sync.Mutex
+var m = make(map[string]int)
+
+func lookup(key string) int {
+    mu.Lock()
+    defer mu.Unlock()
+    return m[key]
+}
+\end{lstlisting}
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-8.3}]
+func bigSlowOperation() {
+    defer trace(%*``*\)bigSlowOperation%*''*\))() // non si dimentichino le
+                                     // parentesi extra per
+                                     // avviare la funzione
+    time.Sleep(10 * time.Second)     // si simula un'operazione
+                                     // lenta
+}
+
+func trace(msg string) func() {
+    start := time.Now()
+    log.Printf(%*``*\)enter %s%*''*\), msg)
+    return func() {
+        log.Printf(%*``*\)exit %s (%s)%*''*\), msg, time.Since(start))
+    }
+}
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-8.4}]
+2022/03/05 18:46:39 enter bigSlowOperation
+2022/03/05 18:46:49 exit bigSlowOperation (10.000589217s)
+\end{lstlisting}
+Le funzioni differite vengono eseguite \textit{dopo} che le istruzioni di ritorno hanno aggiornato le variabili dei risultati della funzione.
+Poiché una funzione anonima può accedere alle variabili della sua funzione di racchiudimento, inclusi i risultati denominati, una funzione anonima differita può osservare i risultati della funzione.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-8.5}]
+func double(x int) (result int) {
+    defer func() { fmt.Printf(%*``*\)double(%d) = %d\n%*''*\), x, result) }()
+    return x + x
+}
+
+func triple(x int) (result int) {
+    defer func() { result += x }()
+    return double(x)
+}
+
+func main() {
+    fmt.Println(triple(4))
+}
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting4-8.6}]
+double(4) = 8
+12
+\end{lstlisting}
+
+
+\section{Panic}
+\label{sec:panic}%
+Il sistema di tipo di Go cattura gli errori al momento della compilazione, ma altri, come l'accesso all'array out-of-bounds o il puntatore nil, la dereferenza, richiedono controlli al momento dell'esecuzione.
+Quando la routine Go rileva questi errori, lancia il \verb|panic|.
+
+Durante un tipico panic, l'esecuzione normale si ferma, tutte le chiamate di funzione differite vengono eseguite e il programma si blocca con un messaggio di log.
+Questo messaggio di log include il valore di panic, che di solito è un messaggio di errore di qualche tipo, e, per ogni goroutine, una traccia di stack che mostra la pila di chiamate di funzione che erano attive al momento del panico.
+Questo messaggio di log ha spesso abbastanza informazioni per diagnosticare la causa principale del problema senza eseguire di nuovo il programma, quindi dovrebbe sempre essere incluso in una segnalazione di bug su un programma in preda al panic.
