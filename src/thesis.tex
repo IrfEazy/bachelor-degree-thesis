@@ -89,15 +89,12 @@
         name=Irfan Cela, % Author Name and Surname
         academicyear=2020/2021
     } % These info will be put into your Title page
-    %\pagenumbering{Alph}
-    %\includepdfmerge{front}
 
 %----------------------------------------------------------------------------
 %	PREAMBLE PAGES: ABSTRACT (inglese e italiano), EXECUTIVE SUMMARY
 %----------------------------------------------------------------------------
     \startpreamble
     \setcounter{page}{1} % Set page counter to 1
-    %\pagenumbering{arabic}
 
 %----------------------------------------------------------------------------
 %	LIST OF CONTENTS/FIGURES/TABLES/SYMBOLS
@@ -108,62 +105,62 @@
     \tableofcontents % Table of contents
     \thispagestyle{empty}
     \cleardoublepage
-    %\tableofcontents
 
     \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
     \mainmatter % Begin numeric (1,2,3...) page numbering
 
     \chapter*{Introduzione}
     \label{ch:introduzione}%
-    \input{chapters/0_introduzione}
+    \input{chapters/0/0-0-introduzione}
 
 
     \chapter{Struttura del programma}
     \label{ch:struttura_del_programma}%
-    \input{chapters/1_struttura_del_programma}
+    \input{chapters/1/1-0-struttura-programma}
 
 
     \chapter{Tipi di dati di base}
     \label{ch:tipi_di_dati_di_base}%
-    \input{chapters/2_tipi_dati_base}
+    \input{chapters/2/2-0-tipi-dati-base}
 
 
     \chapter{Tipi compositi}
     \label{ch:tipi_compositi}%
-    \input{chapters/3_tipi_compositi}
+    \input{chapters/3/3-0-tipi-compositi}
 
 
     \chapter{Funzioni}
     \label{ch:funzioni}%
-    \input{chapters/4_funzioni}
+    \input{chapters/4/4-0-funzioni}
 
 
     \chapter{Metodi}
     \label{ch:metodi}%
-    \input{chapters/5_metodi}
+    \input{chapters/5/5-0-metodi}
 
 
     \chapter{Interfacce}
     \label{ch:interfacce}%
-    \input{chapters/6_interfacce}
+    \input{chapters/6/6-0-interfacce}
 
 
     \chapter{Goroutine e channel}
     \label{ch:goroutine_e_channel}%
-    \input{chapters/7_goroutines_e_channel}
+    \input{chapters/7/7-0-goroutines-channel}
 
 
     \chapter{Concorrenza con variabili condivise}
     \label{ch:concorrenza_con_variabili_condivise}%
-    \input{chapters/8_concorrenza_con_variabili_condivise}
+    \input{chapters/8/8-0-concorrenza-variabili-condivise}
 
 
     \chapter{Conclusioni}
     \label{ch:conclusioni}%
-    \input{chapters/9_conclusioni}
+    \input{chapters/9/9-0-conclusioni}
     \begin{thebibliography}{100}
         \bibitem{the_go_programming_language} \textbf{The Go Programming Language} Alan A. A. Donovan · Brian W. Kernighan, Published Oct 26, 2015 in paperback and Nov 20 in e-book, Addison-Wesley;
         380pp;
         ISBN: 978--0134190440, authors@gopl.io
     \end{thebibliography}
 \end{document}
+

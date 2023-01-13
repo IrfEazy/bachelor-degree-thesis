@@ -1,0 +1,54 @@
+Una funzione può restituire più di un risultato.
+Il risultato della chiamata di una funzione multi-valore è una tupla di valori.
+Il chiamante della funzione deve esplicitare l'assegnazione dei valori alle variabili nel caso una di esse verrà in seguito usata.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.1}]
+links, err := findLinks(url)
+\end{lstlisting}
+Per ignorare uno dei valori, assegnare uno di essi agli identificatori blank:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.2}]
+links, _ := findLinks(url) // gli errori sono ignorati
+\end{lstlisting}
+Il risultato di una chiamata multi-valore può essere a sua volta restituito da una funzione di chiamata (multi-valori), come in questa funzione:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.3}]
+func findLiksLog(url string) ([]string, error) {
+    log.Printf(%*``*\)findLinks %s%*''*\), url)
+    return findLinks(url)
+}
+\end{lstlisting}
+Una chiamata multi-valore può apparire come unico argomento quando si chiama una funzione con più parametri.
+Anche se raramente usato nel codice di produzione, questa caratteristica è a volte conveniente durante il debug in quanto ci permette di stampare tutti i risultati di una chiamata utilizzando una singola istruzione.
+Le due istruzioni di stampa qui sotto hanno lo stesso effetto.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.4}]
+log.Println(findLinks(url))
+
+links, err := findLinks(url)
+log.Println(links, err)
+\end{lstlisting}
+In una funzione con risultati denominati, gli operandi di un'istruzione return possono essere omessi.
+Questo è chiamato a \textit{bare return}.
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.5}]
+func CountWordsAndImages(url string) (words, images int,
+                                                err error) {
+    resp, err := http.Get(url)
+    if err != nil {
+        return
+    }
+    doc, err := html.Parse(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        err = fmt.Errorf(%*``*\)parsing HTML: %s%*''*\), err)
+        return
+    }
+    words, images = countWordAndImages(doc)
+    return
+}
+
+func countWordsAndImages(n *html.Node) (words, images int) {
+    /* ... */
+}
+\end{lstlisting}
+Un brave return è un modo abbreviato per restituire ciascuna delle variabili di risultato nominate in ordine, quindi nella funzione sopra, ogni dichiarazione di ritorno è equivalente a:
+\begin{lstlisting}[frame=single, label={lst:lstlisting4-3.6}]
+return word, images, err
+\end{lstlisting}
+In funzioni come questa, con molte istruzioni di ritorno e diversi risultati, i bare return possono ridurre la duplicazione del codice, ma raramente rendono il codice più facile da capire.

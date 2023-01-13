@@ -1,0 +1,34 @@
+I tipi di interfaccia esprimono generalizzazioni o astrazioni sui comportamenti di altri tipi.
+Generalizzando, le interfacce ci permettono di scrivere funzioni più flessibili e adattabili perché non sono legate ai dettagli di una particolare implementazione.
+
+Ciò che rende le interfacce di Go così distintive è che sono \textit{soddisfatte implicitamente}.
+In altre parole, non c'è bisogno di dichiarare tutte le interfacce che un dato tipo concreto soddisfa;
+basta semplicemente possedere i metodi necessari.
+Questo design consente di creare nuove interfacce che sono soddisfatte dai tipi concreti esistenti senza modificare i tipi esistenti, il che è particolarmente utile per i tipi definiti in pacchetti che non si controllano.
+
+
+\section{Interfacce come contratti}
+\label{sec:interfacce_come_contratti}
+\input{chapters/6/6-1-interfacce-contratti}
+
+\section{Tipi di interfaccia}
+\label{sec:tipi_di_interfaccia}%
+\input{chapters/6/6-2-tipi-interfaccia}
+
+
+\section{Soddisfacimento dell'interfaccia}
+\label{sec:soddisfacimento_interfaccia}
+\input{chapters/6/6-3-soddisfacimento-interfaccia}
+
+\section{Parsing Flags con flag.Value}
+\label{sec:parsing_flags_con_flagvalue}
+\input{chapters/6/6-4-parsing-flags-flagvalue}
+
+\section{Valori di interfaccia}
+\label{sec:valori_di_interfaccia}
+\input{chapters/6/6-5-valori-interfaccia}
+
+\section{L'interfaccia error}
+\label{sec:interfaccia_error}%
+\input{chapters/6/6-6-interfaccia-error}
+

@@ -1,0 +1,47 @@
+%
+Il valore detenuto da una variabile viene aggiornato da una dichiarazione di assegnazione, che nella sua forma più semplice ha una variabile a sinistra del segno \verb|=| e un'espressione a destra.
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-4.1}]
+x = 1                       // variabile nominata
+*p = true                   // variabile indiretta
+person.name = %*``*\)bob%*''*\)         // campo struct
+count[x] = count[x] * scale // elemento array o slice o map
+\end{lstlisting}
+
+\subsection{Assegnazione di tuple}
+\label{subsec:assegnazione_di_tuple}%
+Un'altra forma di assegnazione, nota come \textit{assegnazione di tuple}, permette di assegnare più variabili contemporaneamente.
+Tutte le espressioni di destra vengono valutate prima che una delle variabili venga aggiornata, rendendo questo modulo più utile quando alcune delle variabili appaiono su entrambi i lati dell'assegnazione, come accade, ad esempio, quando si scambiano i valori di due variabili:
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-4-1.1}]
+x, y = y, x
+a[i], a[j] = a[j], a[i]
+\end{lstlisting}
+o quando si calcola il massimo comune divisore (MCD) di due interi:
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-4-1.2}]
+func gcd(x, y int) int {
+    for y != 0 {
+        x, y = y, x%y
+    }
+    return x
+}
+\end{lstlisting}
+o quando si calcola iterativamente l'\textit{n}-esimo numero di Fibonacci:
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-4-1.3}]
+func fib(n int) int {
+    x, y := 0, 1
+    for i := 0; i < n; i++ {
+        x, y = y, x+y
+    }
+    return x
+}
+\end{lstlisting}
+
+\subsection{Assegnabilità}
+\label{subsec:assegnabilita}%
+Le istruzioni di assegnazione sono una forma esplicita di assegnazione, ma ci sono molti posti in un programma in cui un'assegnazione avviene \textit{implicitamente}: una chiamata di funzione assegna implicitamente i valori di argomento alle variabili di parametro corrispondenti;
+un'istruzione \verb|return| assegna implicitamente gli operandi di \verb|return| alle corrispondenti variabili di risultato.
+
+Un'assegnazione, esplicita o implicita, è sempre legale se il lato sinistro (la variabile) e il lato destro (il valore) hanno lo stesso tipo.
+Più in generale, l'assegnazione è legale se solo se il valore è \textit{assegnabile} al tipo di variabile.
+
+Per sapere se due valori possano essere confrontati con \verb|==| e \verb|!=| bisogna vedere la loro assegnabilità: in ogni confronto, il primo operando deve essere assegnabile al tipo del secondo operando, o viceversa.
+

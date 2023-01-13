@@ -1,0 +1,27 @@
+In questo capitolo si pone maggiormente l'attenzione sui meccanismi della concorrenza.
+In particolare, si affrontano i problemi legati alla condivisione di variabili fra molteplici goroutine, le tecniche analitiche per riconoscere questi problemi e i pattern per risolverli.
+Infine verrà esposta la differenza fra goroutine e thread del sistema operativo.
+
+
+\section{Race condition}
+\label{sec:race_condition}
+\input{chapters/8/8-1-race-condition}
+
+\section{Mutua esclusione: sync.Mutex}
+\label{sec:mutua_esclusione_syncmutex}
+\input{chapters/8/8-2-mutua-esclusione-sync.mutex}
+
+\section{Mutex di lettura/scrittura: sync.RWMutex}
+\label{sec:mutex_di_lettura_scrittura_syncrwmutex}%
+\input{chapters/8/8-3-mutex-lettura-scrittura-syncrwmutex}
+
+
+\section{Sincronizzazione di memoria}
+\label{sec:sincronizzazione_di_memoria}%
+\input{chapters/8/8-4-sincronizzazione-memoria}
+
+
+\section{Esempio: cache concorrente non-bloccante}
+\label{sec:esempio_cache_concorrente_nonbloccante}
+\input{chapters/8/8-5-esempio-cache-concorrente-non-bloccante}
+

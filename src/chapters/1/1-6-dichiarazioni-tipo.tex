@@ -1,0 +1,65 @@
+%
+Il tipo di variabile o espressione definisce le caratteristiche dei valori che può assumere, come la loro dimensione (numero di bit o numero di elementi, forse), come sono rappresentati internamente, le operazioni intrinseche che possono essere eseguite su di essi, e i metodi ad essi associati.
+
+Una dichiarazione di \verb|type| definisce un nuovo \textit{tipo denominato} che ha lo stesso \textit{tipo sottostante} di un tipo esistente.
+Il tipo denominato fornisce un modo per separare usi diversi e forse incompatibili del tipo sottostante in modo che non possano essere mescolati involontariamente.
+\begin{lstlisting}[label={lst:lstlisting1-5.1}]
+type nome tipoSottostante
+\end{lstlisting}
+Le dichiarazioni di tipo appaiono più spesso a livello di pacchetto, e se il nome viene esportato è accessibile anche da altri pacchetti.
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-5.2}]
+type Celsius float64
+type Fahrenheit float64
+\end{lstlisting}
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-5.3}]
+const (
+    AbsoluteZeroC Celsius = -273.15
+    FreezingC	  Celsius = 0
+    BoilingC	  Celsius = 100
+)
+
+func CToF(c Celsius) Fahrenheit {
+    return Fahrenheit(c*9/5 + 32)
+}
+
+func FToC(f Fahrenheit) Celsius {
+    return Celsius((f - 32) * 5 / 9)
+}
+\end{lstlisting}
+In questo esempio, sono definiti due tipi denominati, \verb|Celsius| e \verb|Fahrenheit|.
+Anche se entrambi hanno lo stesso tipo sottostante, \verb|float64|, non hanno lo stesso tipo, quindi non possono essere comparati o combinati con espressioni aritmetiche.
+Un'esplicita \textit{conversione} di tipo, come \verb|Celsius(t)| e \verb|Fahrenheit(t)|, è richiesto per convertire una variabile \verb|t| di tipo \verb|float64|.
+
+Per ogni tipo \verb|T|, c'è una corrispondente operazione di conversione \verb|T(x)| che converte il valore \verb|x| in tipo \verb|T|.
+Una conversione da un tipo all'altro è consentita se entrambi hanno lo stesso tipo sottostante, o se entrambi sono tipi di puntatore senza nome che puntano a variabili dello stesso tipo sottostante;
+queste conversioni cambiano il tipo ma non la rappresentazione del valore.
+
+Il tipo sottostante di un tipo denominato determina la sua struttura e rappresentazione, e anche l'insieme di operazioni intrinseche che supporta, che sono gli stessi come se il tipo sottostante fosse stato utilizzato direttamente.
+Nel caso si facciano comparazioni fra tipi denominati di diverso tipo, allora si ottiene un errore di compilazione per mancata corrispondenza del tipo.
+
+\subsection{Inizializzazione dei pacchetti}
+\label{subsec:inizializzazione_dei_pacchetti}%
+L'inizializzazione dei pacchetti inizia inizializzando le variabili a livello di pacchetto nell'ordine in cui sono dichiarate, tranne che le dipendenze vengono risolte per prime:
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-5-1.1}]
+var a = b + c // a %*\textit{è}*\) inizializzato per terzo, a 3
+var b = f()   // b %*\textit{è}*\) inizializzato per secondo, a 2, chiamando f
+var c = 1     // c %*\textit{è}*\) inizializzato per primo, a 1
+
+func f() int {
+    return c + 1
+}
+\end{lstlisting}
+Ogni variabile dichiarata a livello di pacchetto inizia la vita con il valore della sua espressione di inizializzazione, se presente, ma per alcune variabili, come le tabelle di dati, un'espressione di inizializzazione potrebbe non essere il modo più semplice per impostare il suo valore iniziale.
+In tal caso, il servizio della funzione \verb|init| può semplificare il lavoro.
+Ogni file può contenere la funzione \verb|init| la cui dichiarazione è:
+\begin{lstlisting}[label={lst:lstlisting1-5-1.2}]
+func init() { codice }
+\end{lstlisting}
+Tali funzioni di \verb|init| non possono essere chiamate o referenziate, perché altrimenti sarebbero funzioni normali.
+All'interno di ogni file, le funzioni di \verb|init| vengono eseguite automaticamente all'avvio del programma, nell'ordine in cui vengono dichiarate.
+
+L'inizializzazione procede dal basso verso l'alto;
+il pacchetto principale è l'ultimo ad essere inizializzato.
+In questo modo, tutti i pacchetti sono completamente inizializzati prima dell'inizio della funzione principale dell'applicazione.
+In particolare, un pacchetto viene inizializzato seguendo l'ordine delle importazioni nel programma, risolvendo prima le dipendenze, quindi un pacchetto \verb|p| che importa \verb|q| può essere certo che \verb|q| sia completamente inizializzato prima che inizi la sua inizializzazione.
+

@@ -1,0 +1,96 @@
+%
+Un tipo \textit{soddisfa} un'interfaccia se possiede tutti i metodi che l'interfaccia richiede.
+
+La regola di assegnabilità per le interfacce è molto semplice: un'espressione può essere assegnata a un'interfaccia solo se il suo tipo soddisfa l'interfaccia.
+\begin{lstlisting}[frame=single, label={lst:lstlisting6-3.1}]
+var w io.Writer
+w = os.Stdout         // OK: *os.File ha il metodo Write
+w = new(bytes.Buffer) // OK: *bytes.Buffer ha il metodo Write
+w = time.Second       // compile error: time.Duration non ha il
+                      // metodo Write
+
+var rwc io.ReadWriteCloser
+rwc = os.Stdout         // OK: *os.File ha i metodi Read, Write,
+                        // Close
+rwc = new(bytes.Buffer) // compile error: *bytes.Buffer non ha
+                        // il metodo Close
+\end{lstlisting}
+La regola si applica anche quando il lato destro è esso stesso un'interfaccia:
+\begin{lstlisting}[frame=single, label={lst:lstlisting6-3.2}]
+w = rwc // OK: io.ReadWriteCloser ha il metodo Write
+rwc = w // compile error: io.Writer non ha il metodo Close
+\end{lstlisting}
+Il tipo \verb|interface{}|, detto \textit{interfaccia vuota}, è indispensabile.
+Poiché il tipo di interfaccia vuota non pone richieste sui tipi che lo soddisfano, possiamo assegnare \textit{qualsiasi} valore all'interfaccia vuota.
+\begin{lstlisting}[frame=single, label={lst:lstlisting6-3.3}]
+var any interface{}
+any = true
+any = 12.34
+any = %*``*\)hello%*''*\)
+any = map[string]int{%*``*\)one%*''*\): 1}
+any = new(bytes.Buffer)
+\end{lstlisting}
+Naturalmente, avendo creato un \verb|interface{}| contenente un valore booleano, float, string, map, puntatore, o qualsiasi altro tipo, non è possibile far nulla direttamente al valore che detiene poiché l'interfaccia non ha metodi.
+
+Poiché il soddisfacimento dell'interfaccia dipende solo dai metodi dei due tipi coinvolti, non è necessario dichiarare la relazione tra un tipo concreto e le interfacce che soddisfa.
+
+Tipi di interfaccia non vuoti come \verb|io.Writer| sono più spesso soddisfatti da un tipo di puntatore, in particolare quando uno o più dei metodi di interfaccia implica una sorta di mutazione al ricevitore, come fa il metodo \verb|Write|.
+Un puntatore a una struttura è un tipo di metodo particolarmente comune.
+
+Ma i tipi di puntatore non sono affatto gli unici tipi che soddisfano le interfacce, e anche le interfacce con i metodi mutatore possono essere soddisfatte da uno degli altri tipi di riferimento di Go.
+
+Un tipo concreto può soddisfare molte interfacce non correlate.
+Immaginiamo di avere un programma che organizza o vende manufatti culturali digitalizzati come musica, film e libri.
+Si potrebbe definire la seguente serie di tipi concreti:
+\begin{lstlisting}[frame=single, label={lst:lstlisting6-3.4}]
+Album
+Book
+Movie
+Magazine
+Podcast
+TVEpisode
+Track
+\end{lstlisting}
+Possiamo esprimere ogni astrazione di interesse come un'interfaccia.
+Alcune proprietà sono comuni a tutti gli artefatti, come il titolo, la data di creazione e la lista dei creatori (autori e artisti).
+\begin{lstlisting}[frame=single, label={lst:lstlisting6-3.5}]
+type Artifact interface {
+    Title() string
+    Creators() []string
+    Created() time.Time
+}
+\end{lstlisting}
+Le altre proprietà sono ristrette ad alcuni dei tipi di artefatti.
+La prioprietà relative ai testi stampati sono rilevanti solo ai libri e ai magazine, mentre solo i film e gli episodi televisivi hanno la proprietà della risoluzione dello schermo.
+\begin{lstlisting}[frame=single, label={lst:lstlisting6-3.6}]
+types Text interface {
+    Pages() int
+    Words() int
+    PageSize() int
+}
+
+type Audio interface {
+    Stream() (io.ReadCloser, error)
+    RunningTime() time.Duration
+    Format() string // p.e., %*\textit{``}*\)MP3%*\textit{''}*\), %*\textit{``}*\)WAV%*\textit{''}*\)
+}
+
+type Video interface {
+    Stream() (io.ReadCloser, error)
+    RunningTime() time.Duration
+    Format() string // p.e., %*\textit{``}*\)MP4%*\textit{''}*\), %*\textit{``}*\)WMV%*\textit{''}*\)
+    Resolution() (x, y int)
+}
+\end{lstlisting}
+Queste interfacce permettono di aggregare tipi concreti e di esprimere gli aspetti che condividono.
+Per esempio, se bisogna gestire gli oggetti \verb|Audio| e \verb|Video| allo stesso modo, si può definire un'interfaccia \verb|Streamer| per rappresentare gli aspetti che hanno in comune senza cambiare alcun tipo dichiarato già esistente.
+\begin{lstlisting}[frame=single, label={lst:lstlisting6-3.7}]
+type Streamer interface {
+    Stream() (io.ReadCloser, error)
+    RunningTime() time.Duration
+    Format() string
+}
+\end{lstlisting}
+Ogni gruppo di tipi concreti che si basano sui loro comportamenti condivisi possono essere espressi come un tipo di interfaccia.
+A differenza dei linguaggi fondati sulle classi, dove l'insieme delle classi che soddisfano le interfacce è esplicito, in Go si può definire una nuova astrazione o gruppi di interesse quando diventa necessario, senza andare a modificare le dichiarazioni dei tipi concreti.
+Questo è particolarmente utile quando il tipo concreto sta in un package scritto da un programmatore terzo.

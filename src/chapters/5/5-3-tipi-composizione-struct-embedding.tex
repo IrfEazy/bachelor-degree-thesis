@@ -1,0 +1,108 @@
+%
+Si consideri il tipo \verb|ColoredPoint|:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.1}]
+import %*``*\)image/color%*''*\)
+
+type Point struct { X, Y float64 }
+
+type ColoredPoint struct {
+    Point
+    Color color.RGBA
+}
+\end{lstlisting}
+\verb|Point| è stato \textit{inserito} in \verb|ColoredPoint| per fornire i campi \verb|X| e \verb|Y|.
+Se si vuole, si possono selezionare i campi di \verb|ColoredPoint| che sono stati forniti dal \verb|Point| incorporato senza menzionare il \verb|Point|.
+Un meccanismo simile si applica ai \textit{metodi} del \verb|Point|.
+Si possono chiamare i metodi del campo \verb|Point| incorporato usando un ricevitore di tipo \verb|ColoredPoint|, anche se \verb|ColoredPoint| non ha metodi dichiarati:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.2}]
+red := color.RGBA{255, 0, 0, 255}
+blue := color.RGBA{0, 0, 255, 255}
+var p = ColoredPoint{Point{1, 1}, red}
+var q = ColoredPoint{Point{5, 4}, blue}
+fmt.Println(p.Distance(q.Point))
+p.ScaleBy(2)
+q.ScaleBy(2)
+fmt.Println(p.Distance(q.Point))
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting5-3.3}]
+5
+10
+\end{lstlisting}
+I metodi di \verb|Point| sono stati \textit{promossi} a \verb|ColoredPoint|.
+In questo modo, l'embedding permette di costruire tipi complessi con molti metodi mediante la \textit{composizione} di diversi campi, ognuno dei quali fornisce alcuni metodi.
+
+Si osservino le chiamate a \verb|Distance| sopra.
+\verb|Distance| ha un parametro di tipo \verb|Point|, e \verb|q| non è un \verb|Point|, quindi anche se \verb|q| ha un campo incorporato di quel tipo, dobbiamo selezionarlo esplicitamente.
+Tentare di passare \verb|q| sarebbe un errore:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.4}]
+p.Distance(q) // compile error: impossibile usare q
+              // (ColoredPoint) come Point
+\end{lstlisting}
+Il tipo di campo anonimo può essere un \textit{puntatore} a un tipo denominato, nel qual caso i campi e i metodi sono promossi indirettamente dall'oggetto puntato.
+L'aggiunta di un altro livello di indirezione ci permette di condividere strutture comuni e variare dinamicamente le relazioni tra gli oggetti.
+La dichiarazione di \verb|ColoredPoint| qui sotto incorpora un \verb|*Point|:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.5}]
+type ColoredPoint struct {
+    *Point
+    Color color.RGBA
+}
+
+p := ColoredPoint{&Point{1, 1}, red}
+q := ColoredPoint{&Point{5, 4}, blue}
+fmt.Println(p.Distance(*q.Point))
+q.Point = p.Point // p e q ora condividono lo stesso punto
+p.ScaleBy(2)
+fmt.Println(*p.Pointm *q.Point)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting5-3.6}]
+5
+{2, 2} {2, 2}
+\end{lstlisting}
+Un tipo di struct può avere più di un campo anonimo.
+Se avessimo dichiarato ColoredPoint come
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.7}]
+type ColoredPoint struct {
+    Point
+    color.RGBA
+}
+\end{lstlisting}
+un valore di questo tipo avrebbe tutti i metodi di \verb|Point|, tutti i metodi di \verb|RGBA|, e tutti i metodi aggiuntivi dichiarati su \verb|ColoredPoint| direttamente.
+Quando il compilatore risolve un selettore come \verb|p.ScaleBy| in un metodo, cerca prima un metodo dichiarato direttamente chiamato \verb|ScaleBy|, poi metodi promossi dai campi embedded di \verb|ColoredPoint|, quindi metodi promossi dai campi embedded all'interno di \verb|Point| e \verb|RGBA|, e così via.
+Il compilatore segnala un errore se il selettore è ambiguo perché due metodi sono stati promossi dallo stesso rango.
+
+I metodi possono essere dichiarati solo su tipi nominati (come \verb|Point|) e puntatori ad essi (\verb|*Point|), ma grazie all'embedding, è possibile e talvolta utile che anche i tipi di struct \textit{senza nome} abbiano metodi.
+
+Questo esempio mostra parte di una semplice cache implementata usando due variabili a livello di pacchetto, una mutex e la mappa che custodisce:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.8}]
+var (
+    mu sync.Mutex // custodisce mapping
+    mapping = make(map[string]string)
+)
+\end{lstlisting}
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.9}]
+func Lookup(key string) string {
+    mu.Lock()
+    v := mapping[key]
+    mu.Unlock()
+    return v
+}
+\end{lstlisting}
+La versione qui sotto è funzionalmente equivalente ma raggruppa insieme le due variabili correlate in una singola variabile a livello di pacchetto, \verb|cache|:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-3.10}]
+var cache = struct {
+    sync.Mutex
+    mapping map[string]string
+} {
+    mapping: make(map[string]string)
+}
+
+func Lookup(key string) string {
+    cache.Lock()
+    v := cache.mapping[key]
+    cache.Unlock()
+    return v
+}
+\end{lstlisting}
+La nuova variabile dà nomi più espressivi alle variabili relative alla cache, e dato che \verb|sync.Mutex| è incorporato al suo interno, i suoi metodi \verb|Lock| e \verb|Unlock| sono promossi al tipo di struttura senza nome, permettendoci di bloccare la cache con una sintassi auto-esplicativa.

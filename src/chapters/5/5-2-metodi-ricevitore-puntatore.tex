@@ -1,0 +1,82 @@
+Poiché la chiamata ad una funzione avvia la copia di ogni valore in input, se una funzione ha bisogno di aggiornare una variabile, o se un argomento è così grande che si vuole evitarne la copia, si deve passare l'indirizzo della variabile usando un puntatore.
+Lo stesso vale per i metodi che devono aggiornare la variabile ricevente: devono essere collegati al tipo di puntatore, come \verb|*Point|.
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-2.1}]
+func (p *Point) ScaleBy(factor float64) {
+   p.X *= factor
+   p.Y *= factor
+}
+\end{lstlisting}
+Il nome del metodo è \verb|(*Point).ScaleBy|.
+Le parentesi sono necessarie;
+senza di esse, l'espressione sarebbe analizzata come \verb|*(Point.ScaleBy)|.
+
+In un programma realistico, la convenzione impone che se un qualsiasi metodo di \verb|Point| ha un ricevitore puntatore, allora \textit{tutti} i metodi di \verb|Point| dovrebbero avere un ricevitore puntatore, anche quelli che non ne hanno strettamente bisogno.
+
+I tipi denominati (\verb|Point|) e i puntatori ad essi (\verb|*Point|) sono gli unici tipi che possono apparire in una dichiarazione del ricevitore.
+Inoltre, per evitare ambiguità, le dichiarazioni di metodo non sono consentite su tipi nominati che sono essi stessi tipi di puntatore:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-2.2}]
+type P *int
+func (P) f() { /* ... */ } // compile error: tipo di ricevitore
+                           // non valido
+\end{lstlisting}
+Il metodo (*Point).ScaleBy può essere chiamato fornendo un ricevitore *Point, in questo modo:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-2.3}]
+r := &Point{1, 2}
+r.ScaleBy(2)
+fmt.Println(*r)
+
+p := Point{1, 2}
+pptr := &p
+pptr.ScaleBy(2)
+fmt.Println(p)
+
+t := Point{1, 2}
+(&t).ScaleBy(2)
+fmt.Println(t)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting5-2.4}]
+{2, 4}
+{2, 4}
+{2, 4}
+\end{lstlisting}
+Ma gli ultimi due casi sono sgraziati.
+Fortunatamente, il linguaggio favorisce il codice.
+Se il ricevitore \verb|p| è una \textit{variabile} di tipo \verb|Point| ma il metodo richiede un ricevitore \verb|*Point|, possiamo usare questa abbreviazione:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-2.5}]
+p.ScaleBy(2)
+\end{lstlisting}
+e il compilatore eseguirà un \verb|&p| implicito sulla variabile.
+Non possiamo chiamare un metodo \verb|*Point| su un ricevitore \verb|Point| non indirizzabile.
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-2.6}]
+Point{1, 2}.ScaleBy(2) // compile error: non prende l'indirizzo
+                       // di un Point literal
+\end{lstlisting}
+Ma \textit{possiamo} chiamare un metodo \verb|Point| come \verb|Point.Distance| con un ricevitore \verb|*Point|, perché c'è un modo per ottenere il valore dall'indirizzo: basta caricare il valore indicato dal ricevitore.
+Il compilatore inserisce un'operazione \verb|*| implicita per il programmatore.
+Le seguenti istruzioni sono equivalenti:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-2.7}]
+pptr.Distance(q)
+(*pptr).Distance(q)
+\end{lstlisting}
+
+\subsection{Nil è un valore ricevitore valido}
+\label{subsec:nil_e_un_valore_ricevitore_valido}%
+Proprio come alcune funzioni permettono i puntatori nil come argomenti, così fanno alcuni metodi per il loro ricevitore, specialmente se \verb|nil| è un valore zero significativo del tipo, come con map e slice.
+In questa semplice linked list di numeri interi, \verb|nil| rappresenta la lista vuota:
+\begin{lstlisting}[frame=single, label={lst:lstlisting5-2.8}]
+// Un IntList %*\textit{è}*\) una linked list di interi.
+// Un *IntList nil rappresenta la lista vuota.
+type IntList struct {
+    Value int
+    Tail  *IntList
+}
+
+// Sum restituisce la somma degli elementi della lista.
+func (list *IntList) Sum() int {
+    if list == nil {
+        return 0
+    }
+    return list.Value + list.Tail.Sum()
+}
+\end{lstlisting}

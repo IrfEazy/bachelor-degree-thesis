@@ -1,0 +1,148 @@
+%
+All'interno di una funzione, una forma alternativa chiamata \textit{short variable declaration} può essere usata per dichiarare e inizializzare le variabili locali.
+Questa istruzione assume la forma di \verb|nome := espressione| e il tipo di \verb|nome| è determinato dal tipo di \verb|espressione|.
+Esempi di brevi istruzioni di variabili sono:
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-1.1}]
+anim := gif.GIF{LoopCount: nframes}
+freq := rand.Float64() * 3.0
+t := 0.0
+\end{lstlisting}
+A causa della loro compattezza e flessibilità, le short variable declaration sono usate per dichiarare e inizializzare la maggior parte delle variabili locali.
+Una dichiarazione \verb|var| tende ad essere riservata alle variabili locali che hanno bisogno di un tipo esplicito diverso da quello dell'espressione di inizializzazione, o per quando alla variabile viene assegnato un valore in seguito e il suo valore iniziale non è importante.
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-1.2}]
+i := 100                  // un int
+var boiling float64 = 100 // un float64
+
+var names []string
+var err error
+var p Point
+\end{lstlisting}
+Come per le dichiarazioni \verb|var|, più variabili possono essere dichiarate e inizializzate con la stessa short variable declaration
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-1.3}]
+i, j := 0, 1
+\end{lstlisting}
+ma le istruzioni con più espressioni di inizializzazione dovrebbero essere usate solo quando aiutano la leggibilità.
+
+Va sottolineato che \verb|:=| è una dichiarazione, mentre \verb|=| è un'assegnazione.
+Un'istruzione multi-variabile non dovrebbe essere confusa con un'\textit{assegnazione tupla}, in cui ad ogni variabile sul lato sinistro viene assegnato un valore sul lato destro:
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-1.4}]
+i, j = j, i
+\end{lstlisting}
+in questo caso si scambiano i valori di \verb|i| e \verb|j|.
+
+Come le normali istruzioni \verb|var|, le short variable declaration possono essere usate per le chiamate di funzione.
+Una short variable declaration si comporta come un'assegnazione solo per le variabili che sono già state dichiarate nello stesso blocco lessicale;
+le dichiarazioni in blocchi esterni sono ignorate.
+
+\subsection{Puntatori}
+\label{subsec:puntatori}%
+Una variabile è una parte di un archivio contenente un valore.
+Le variabili create dalle dichiarazioni sono identificate da un nome, come \verb|x|, ma la maggior parte delle variabili sono identificate solo da espressioni come \verb|x[i]| o \verb|x.f|.
+Tutte queste espressioni leggono il valore di una variabile, tranne quando appaiono sul lato sinistro di un'assegnazione, nel qual caso viene assegnato un nuovo valore alla variabile.
+
+Un valore di un \textit{puntatore} è un \textit{indirizzo} di una variabile.
+Un puntatore è quindi la posizione in cui un valore è memorizzato.
+Non tutti i valori hanno un indirizzo, ma ogni variabile ne ha uno.
+Con un puntatore, è possibile leggere o aggiornare \textit{indirettamente} il valore di una variabile, senza l'uso o la conoscenza del nome di una variabile, sempre ammesso abbia un nome.
+
+Se una variabile è dichiarata \verb|var x int|, l'espressione \verb|&x| (``\verb|x| address'') restituisce un puntatore ad una variabile intera, che è un valore di tipo \verb|*int|, si legge ``pointer to int''.
+Se questo valore è definito come \verb|p|, si dirà che ``\verb|p| punta a \verb|x|'', o equivalentemente ``\verb|p| contiene l'indirizzo di \verb|x|''.
+La variabile a cui \verb|p| punta è indicata da \verb|*p|.
+L'espressione \verb|*p| restituisce il valore di quella variabile, un \verb|int|, ma poiché \verb|*p| denota una variabile, allora può anche apparire a sinistra di un'assegnazione, nel qual caso aggiorna la variabile.
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-2.1}]
+x := 1
+p := &x // p, di tipo *int, punta a x
+fmt.Println(*p)
+*p = 2 // equivalente a x = 2
+fmt.Println(x)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting1-3-2.2}]
+1
+2
+\end{lstlisting}
+Il valore zero di un puntatore per ogni tipo è \verb|nil|.
+Se \verb|p| punta a una variabile, allora vale sempre \verb|p != nil|.
+I puntatori sono comparabili;
+due puntatori sono uguali se e solo se puntano alla stessa variabile o se entrambi sono \verb|nil|.
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-2.3}]
+var x, y int
+fmt.Println(&x == &x, &x == &y, &x == nil)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting1-3-2.4}]
+true false false
+\end{lstlisting}
+Con i puntatori, possiamo ottenere le modifiche alle variabili locali da altre funzioni.
+Per esempio,
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-2.5}]
+func incr(p *int) int {
+    *p++ // incrementa il puntato da p, non cambia p
+    return *p
+}
+
+func main() {
+    v := 1
+    incr(&v) // side effect: v vale ora 2
+    fmt.Println(incr(&v))
+    fmt.Println(v)
+}
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting1-3-2.6}]
+3
+3
+\end{lstlisting}
+
+\subsection{La funzione new}
+\label{subsec:la_funzione_new}%
+Un altro modo per creare una variabile è usare una nuova funzione incorporate.
+L'espressione \verb|new(T)| crea una \textit{variabile senza nome} di tipo \verb|T|, inizializzata al valore zero di \verb|T|, e restituisce il suo indirizzo, che è un valore di tipo \verb|*T|.
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-3.1}]
+p := new(int) // p, che %*\textit{è}*\) di tipo *int, indica una variabile int
+              // senza nome
+fmt.Println(*p)
+*p = 2 // imposta l'int senza nome a 2
+fmt.Println(*p)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting1-3-3.2}]
+0
+2
+\end{lstlisting}
+Una variabile creata con la funzione \verb|new| non è diversa da una normale variabile locale se non per l'assenza del nome.
+Questa funzione è usata perché è sintatticamente conveniente per generare dinamicamente un numero illimitato di variabili, come costruire strutture dati complesse e flessibili (per esempio, alberi e grafi).
+Ogni chiamata a \verb|new| restituisce una variabile distinta con un indirizzo univoco:
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-3.3}]
+p := new(int)
+q := new(int)
+fmt.Println(p == q)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting1-3-3.4}]
+false
+\end{lstlisting}
+Tuttavia, c'è un'eccezione a questa regola: due variabili i cui tipi non portano informazioni e la loro dimensione è zero, come \verb|struct{}| o \verb|[0]int|, a seconda dell'implementazione possono ottenere lo stesso indirizzo.
+Tuttavia, la funzione \verb|new| è usata raramente perché è più conveniente sfruttare i campi delle struct.
+
+\subsection{La durata delle variabili}
+\label{subsec:la_durata_delle_variabili}%
+La \textit{durata} della variabile è l'intervallo di tempo durante il quale la variabile esiste durante l'esecuzione del programma.
+La durata di una variabile a livello di pacchetto è uguale all'intera esecuzione del programma.
+Al contrario, le variabili locali hanno una durata dinamica: una nuova istanza viene creata ogni volta che l'istruzione di dichiarazione viene eseguita, e la variabile vive fino a quando non diventa \textit{irraggiungibile}, momento in cui il suo archivio può essere riciclato.
+Anche i parametri e i risultati delle funzioni sono variabili locali;
+vengono creati ogni volta che viene chiamata una funzione invece di un parametro.
+
+Ad esempio,
+\begin{lstlisting}[frame=single, label={lst:lstlisting1-3-4.1}]
+for t := 0.0; t < cycles*2*math.Pi; t += res {
+    x := math.Sin(t)
+    y := math.Sin(t*freq + phase)
+    img.SetColorIndex(size+int(x*size+0.5),
+        size+int(y*size+0.5), blackIndex)
+}
+\end{lstlisting}
+la variabile \verb|t| viene creata ogni volta che inizia il ciclo \verb|for|, e le nuove variabili \verb|x| e \verb|y| vengono create ad ogni iterazione del ciclo.
+
+Questo discorso diventa importante per il programmatore in Go, dove spesso fa uso di puntatori a oggetti di breve durata all'interno di oggetti di lunga durata, come variabili globali, perché così facendo impedirà al garbage collector di recuperare gli oggetti di breve durata.
+

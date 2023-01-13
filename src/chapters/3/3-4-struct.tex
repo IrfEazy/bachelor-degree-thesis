@@ -1,0 +1,216 @@
+%
+Una \textit{struct} è un tipo di dati aggregato che raggruppa insieme zero o più valori denominati di tipi arbitrari in una singola entità.
+Ogni valore è detto \textit{campo}.
+
+Queste due istruzioni dichiarano un tipo di struct chiamato \verb|Employee| e una variabile chiamata \verb|dilbert| che è un'istanza di un \verb|Employee|:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4.1}]
+type Employee struct {
+    ID 	      int
+    Name      string
+    Address   string
+    DoB       time.Time
+    Position  string
+    Salary    int
+    ManagerID int
+}
+
+var dilbert Employee
+\end{lstlisting}
+I singoli campi di \verb|dilbert| sono accessibili usando la notazione a punti (\verb|dilbert.Name| e \verb|dilbert.DoB|).
+Poiché \verb|dilbert| è una variabile, anche i suoi campi sono variabili, quindi possiamo assegnare ad un campo:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4.2}]
+dilbert.Salary -= 5000
+\end{lstlisting}
+o prendere il suo indirizzo e accedervi tramite un puntatore:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4.3}]
+position := &dilbert.Position
+*position = %*``*\)Senior %*''*\) + *position
+\end{lstlisting}
+La notazione a punti funziona anche con un puntatore a una struct:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4.4}]
+var employeeOfTheMonth *Employee = &dilbert
+employeeOfTheMonth.Position += %*``*\) (proactive team player)%*''*\)
+\end{lstlisting}
+Dove l'ultima istruzione è equivalente a
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4.5}]
+(*employeeOfTheMonth).Position += %*``*\) (proactive team player)%*''*\)
+\end{lstlisting}
+I campi sono di solito scritti uno per riga, con il nome del campo che precede il suo tipo, ma i campi consecutivi dello stesso tipo possono essere combinati, come con \verb|Name| e \verb|Address| qui:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4.6}]
+type Employee struct {
+    ID            int
+    Name, Address string
+    DoB           time.Time
+    Position      string
+    Salary        int
+    ManagerID     int
+}
+\end{lstlisting}
+Un tipo di struct denominato \verb|S| non può dichiarare un campo dello stesso tipo \verb|S|: un valore aggregato non può contenere se stesso.
+Ma \verb|S| può dichiarare un campo del tipo di puntatore \verb|*S|, che ci permette di creare struct di dati ricorsive come liste concatenate e alberi.
+Questo è illustrato nel codice qui sotto, che utilizza un albero binario per implementare un ordinamento di inserimento:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4.7}]
+type tree struct {
+    value       int
+    left, right *tree
+}
+
+// Sorts ordina i valori in posizione.
+func Sort(values []int) {
+    var root *tree
+    for _, v := range values {
+        root = add(root, v)
+    }
+    appendValues(values[:0], root)
+}
+
+// appendValues aggiunge gli elementi di t ai valori
+// in ordine e restituisce la slice risultante.
+func appendValues(values []int, t *tree) []int {
+    if t != nil {
+        values = appendValues(values, t.left)
+        values = append(values, t.value)
+        values = appendValues(values, t.right)
+    }
+    return values
+}
+
+func add(t *tree, value int) *tree {
+    if t == nil {
+        // Equivalente a ritornare &tree{value:value}
+        t = new(tree)
+        t.value = value
+        return t
+    }
+    if value < t.value {
+        t.left = add(t.left, value)
+    } else {
+        t.right = add(t.right, value)
+    }
+    return t
+}
+\end{lstlisting}
+Il valore zero per una struct è composto dai valori zero di ciascuno dei suoi campi.
+
+Il tipo di struct senza campi è chiamato \textit{empty struct}, scritto \verb|struct{}|.
+
+\subsection{Struct literal}
+\label{subsec:struct_literal}%
+Un valore di un tipo di struttura può essere scritto usando una \textit{struct literal} che specifica i valori per i suoi campi.
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-1.1}]
+type Point struct { X, Y int }
+
+p := Point{1, 2}
+\end{lstlisting}
+Ci sono due forme di struct literal.
+La prima forma, mostrata sopra, richiede che sia specificato un valore per \textit{ogni} campo nell'ordine giusto.
+Rende il codice fragile se l'insieme dei campi dovesse poi crescere o essere riordinato.
+Di conseguenza, questa forma tende ad essere usata solo all'interno del pacchetto che definisce il tipo di struct, o con tipi di struct più piccoli per i quali esiste un'ovvia convenzione di ordinamento dei campi, come \verb|image.Point{x, y}| o \verb|color.RGBA{red, green, blue, alpha}|.
+
+Più spesso, viene usata la seconda forma, in cui un valore di struct viene inizializzato elencando alcuni o tutti i nomi dei campi e i loro valori corrispondenti.
+Se un campo è omesso in questo tipo di literal, viene impostato al valore zero per il suo tipo.
+
+I valori di struct possono essere passati come argomenti alle funzioni e restituiti da esse.
+Per esempio, questa funzione scala un ``Punto'' di un fattore specificato:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-1.2}]
+func Scale(p Point, factor int) Point {
+    return Point{p.X * factor, p.Y * factor}
+}
+
+fmt.Println(Scale(Point{1, 2}, 5))
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting3-4-1.3}]
+{5 10}
+\end{lstlisting}
+Per efficienza, la struct più grande è solitamente passata a o restituita da funzioni indirettamente usando un puntatore
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-1.4}]
+func Bonus(e *Employee, percent int) int {
+    return e.Salary * percent / 100
+}
+\end{lstlisting}
+e questo è necessario se la funzione deve modificare il suo argomento, poiché in un linguaggio call-by-value come Go, la funzione chiamata riceve solo una copia di un argomento, non un riferimento all'argomento originale.
+
+\subsection{Confronto tra struct}
+\label{subsec:confronto_tra_struct}%
+Se tutti i campi di una struct sono comparabili, la struct stessa è comparabile, quindi due espressioni di quel tipo possono essere confrontate usando \verb|==| o \verb|!=|.
+L'operazione \verb|==| confronta i campi corrispondenti delle due struct in ordine, quindi le due espressioni stampate qui sotto sono equivalenti:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-2.1}]
+type Point struct { X, Y int }
+
+p := Point{1, 2}
+q := Point{2, 1}
+fmt.Println(p.X == q.X && p.Y == q.Y)
+fmt.Println(p == q)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language=bash, frame=L, label={lst:lstlisting3-4-2.2}]
+false
+false
+\end{lstlisting}
+
+\subsection{Struct embedding e campi anonimi}
+\label{subsec:struct_embedding_e_campi_anonimi}%
+Un insolito meccanismo \textit{struct embedding} ci permette di usare un tipo di struct detto \textit{campo anonimo} di un altro tipo di struct, fornendo una comoda scorciatoia sintattica in modo che una semplice espressione puntiforme come \verb|x.f| possa rappresentare una catena di campi come \verb|x.d.e.f|.
+Dati le seguenti struct:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-3.1}]
+type Circle struct {
+    X, Y, Radius int
+}
+
+type Wheel struct {
+    X, Y, Radius, Spokes int
+}
+\end{lstlisting}
+conviene raccogliere i campi uguali a individuare una nuova struct
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-3.2}]
+type Point struct {
+    X, Y int
+}
+type Circle struct {
+    Center Point
+    Radius int
+}
+
+type Wheel struct {
+    Circle Circle
+    Spokes int
+}
+\end{lstlisting}
+L'applicazione diventerebbe più chiara, ma questo cambiamento renderebbe anche l'accesso ai campi di ``Wheel'' più prolisso:
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-3.3}]
+var w Wheel
+w.Circle.Center.X = 8
+w.Circle.Center.Y = 8
+w.Circle.Radius = 5
+w.Spokes = 20
+\end{lstlisting}
+Go ci permette di dichiarare un campo con un tipo ma senza nome;
+tali campi sono chiamati \textit{campi anonimi}.
+Il tipo di campo deve essere un tipo con nome o un puntatore a un tipo con nome.
+Sotto, \verb|Circle| e \verb|Wheel| hanno un campo anonimo ciascuno.
+Diciamo che un \verb|Point| è \textit{incorporato} all'interno di \verb|Circle|, e un \verb|Circle| è incorporato all'interno di \verb|Wheel|.
+\begin{lstlisting}[frame=single, label={lst:lstlisting3-4-3.4}]
+type Circle struct {
+    Point
+    Radius int
+}
+
+type Wheel struct {
+    Circle
+    Spokes int
+}
+\end{lstlisting}
+Grazie all'incorporazione, possiamo fare riferimento ai nomi alle foglie dell'albero implicito senza dare i nomi intermedi:
+\begin{lstlisting}[frame=single,label={lst:lstlisting3-4-3.5}]
+var w Wheel
+w.X = 8	     // equivalente a w.Circle.Point.X = 8
+w.Y = 8	     // equivalente a w.Circle.Point.Y = 8
+w.Radius = 5 // equivalente a w.Circle.Radius = 5
+w.Spokes = 20
+\end{lstlisting}
+Poiché i campi ``anonimi'' hanno nomi impliciti, non è possibile avere due campi anonimi dello stesso tipo perché in tal caso i loro nomi entrerebbero in conflitto.
+
+Il tipo struct esterno guadagna non solo i campi del tipo embedded ma anche i suoi metodi.
+Questo meccanismo è il modo principale in cui i comportamenti degli oggetti complessi sono composti da quelli più semplici.
+La \textit{composizione} è centrale per la programmazione orientata agli oggetti in Go.

@@ -1,0 +1,27 @@
+La programmazione concorrente, programma visto come composizione di numerose attività autonome, è l'elemento più importante di questi tempi.
+I server web gestiscono richieste per migliaia di client contemporaneamente.
+Le app degli smartphone e dei tablet gestiscono le animazioni sull'interfaccia utente mentre simultaneamente eseguono la computazione e le richieste di rete in background.
+Anche i tradizionali problemi di batch (lettura dei dati, computazione e scrittura degli output) usano la concorrenza per nascondere la latenza delle operazioni I/O così da sfruttare anche i multiprocessori dei computer moderni, i quali, negli anni, continuano a crescere in numero ma non in velocità.
+
+Go offre due stili di programmazione concorrente.
+In questo capitolo vengono esponte le goroutine e i channel, compatibili con la \textit{CSP} o \textit{communicating sequential processes}, un modello di concorrenza dove i valori sono visti come attività indipendenti (goroutine), ma con le variabili confinate alle singole attività.
+Nel prossimo capitolo verranno illustrati gli aspetti più tradizionali del modello \textit{shared memory multithreading}.
+
+
+\section{Goroutine}
+\label{sec:goroutine}%
+\input{chapters/7/7-1-goroutine}
+
+
+\section{Esempio: clock server concorrente}
+\label{sec:esempio_clock_server_concorrente}
+\input{chapters/7/7-2-esempio-clock-server-concorrente}
+
+\section{I channel}
+\label{sec:channel}
+\input{chapters/7/7-3-channel}
+
+\section{Esempio: Chat Server}
+\label{sec:esempio_chat_server}
+\input{chapters/7/7-4-esempio-chat-server}
+

@@ -1,0 +1,64 @@
+Le costanti sono espressioni il cui valore è noto al compilatore e la cui valutazione è garantita che si verifichi al momento della compilazione, non al tempo di esecuzione.
+Il tipo sottostante di ogni costante è un tipo di base: booleano, stringa o numero.
+
+Una dichiarazione \verb|const| definisce valori denominati che sembrano sintatticamente variabili ma il cui valore è costante, il che impedisce cambiamenti accidentali (o nefasti) durante l'esecuzione del programma.
+Per esempio, una costante è più appropriata di una variabile per una costante matematica come \verb|pi|, poiché il suo valore non cambierà:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3.1}]
+const pi = 3.14159 // approssimato; math.Pi %*\textit{è}*\) migliore
+\end{lstlisting}
+Quando una sequenza di costanti è dichiarata come un gruppo, l'espressione a destra può essere omessa per tutti tranne che per il primo del gruppo, il che implica che l'espressione precedente e il suo tipo debbano essere nuovamente usati.
+Ad esempio:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3.2}]
+const (
+    a = 1
+    b
+    c = 2
+    d
+)
+
+fmt.Println(a, b, c, d)
+\end{lstlisting}
+Output:
+\begin{lstlisting}[language = bash, frame = L, label = {lst:lstlisting2-3.3}]
+1 1 2 2
+\end{lstlisting}
+Tuttavia, questo non è molto utile nel caso la copia implicita dell'espressione del lato destro valuti sempre la stessa cosa, ma se potesse variare?
+Otteniamo \verb|iota|.
+
+\subsection{Il generatore costante iota}
+\label{subsec:il_generatore_costante_iota}%
+Una dichiarazione \verb|const| può usare il \textit{generatore costante} \verb|iota|, che viene usato per creare una sequenza di valori correlati senza specificare esplicitamente ciascuno di essi.
+In una dichiarazione \verb|const|, il valore di \verb|iota| inizia a zero e aumenta di uno per ogni elemento della sequenza.
+
+Tipi di questo tipo sono spesso chiamati \textit{enumerazioni}, o \textit{enum} in breve.
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3-1.1}]
+type Weekday int
+
+const (
+    Sunday Weekday = iota
+    Monday
+    Tuesday
+    Wednesday
+    Thursday
+    Friday
+    Saturday
+)
+\end{lstlisting}
+Questo dichiara \verb|Sunday| essere 0, \verb|Monday| essere 1, e così via.
+
+Possiamo usare \verb|iota| anche in espressioni più complesse, per esempio possiamo assegnare ai 5 bit più bassi di un intero senza segno un nome distinto e un'interpretazione booleana:
+\begin{lstlisting}[frame = single, label = {lst:lstlisting2-3-1.2}]
+type Flags uint
+
+const (
+    FlagUp Flags = 1 << iota // %*\textit{è}*\) up
+    FlagBroadcast            // supporta la capacit%*\textit{à}*\) di accesso
+                             // broadcast
+    FlagLoopback             // %*\textit{è}*\) un'interfaccia di loopback
+    FlagPointToPoint         // appartiene a un collegamento
+                             // punto a punto
+    FlagMulticast            // supporta la capacit%*\textit{à}*\) di accesso
+                             // multicast
+)
+\end{lstlisting}
+Così come incrementa \verb|iota|, ad ogni costante viene assegnato il valore di \verb|1 << iota|, che valuta le potenze di due, ciascuno corrispondente ad un singolo bit.
